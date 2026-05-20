@@ -108,14 +108,17 @@ python scripts/ask.py \
 
 ## Current Verified Baseline
 
-The demo baseline indexes DocVQA question text to verify the retrieval and evaluation pipeline before VLM inference.
+The project now has both a demo baseline and real Qwen2.5-VL results. Full details are in `docs/results.md`.
 
-| Sample | Pages | Questions | Mode | Recall@5 |
-| --- | ---: | ---: | --- | ---: |
-| Smoke | 29 | 100 | demo gold-question retrieval | 1.000 |
-| Main | 138 | 500 | demo gold-question retrieval | 0.978 |
+| Sample | Pages | Questions | Mode | Recall@1 | Recall@5 |
+| --- | ---: | ---: | --- | ---: | ---: |
+| Qwen real run | 25 | 76 | strict VLM-summary retrieval | 0.382 | 0.605 |
+| Same subset | 25 | 76 | metadata-only retrieval | not measured | 0.145 |
+| Same subset | 25 | 76 | demo gold-question retrieval | not measured | 0.987 |
+| Smoke | 29 | 100 | demo gold-question retrieval | not measured | 1.000 |
+| Main | 138 | 500 | demo gold-question retrieval | not measured | 0.978 |
 
-The VLM-summary mode is the real multimodal path and is designed to run on Isambard GPU nodes via `slurm/run_vlm_summaries.sbatch`.
+The real VLM run used Qwen2.5-VL-3B-Instruct on an NVIDIA GH200 GPU node through the public Isambard container `/lus/lfs1aip2/projects/public/u6ei/torch_cuda126.sif`.
 
 On Isambard, verify the PyTorch build before VLM inference:
 
@@ -148,6 +151,7 @@ This repo intentionally excludes:
 - Slurm logs
 
 See `docs/aws_architecture.md` for the AWS implementation mapping and `docs/cv_project_summary.md` for a concise portfolio summary.
+See `docs/results.md` for real Qwen2.5-VL retrieval metrics.
 
 ## Limitations
 
