@@ -115,13 +115,14 @@ The project now has both a demo baseline and real Qwen2.5-VL results. Full detai
 
 | Sample | Pages | Questions | Mode | Recall@1 | Recall@5 |
 | --- | ---: | ---: | --- | ---: | ---: |
+| Qwen real run | 100 | 339 | hybrid BM25 + MiniLM embeddings | not measured | 0.587 |
 | Qwen real run | 100 | 339 | strict VLM-summary retrieval | 0.363 | 0.534 |
 | Same subset | 100 | 339 | metadata-only retrieval | 0.003 | 0.035 |
 | Same subset | 100 | 339 | demo gold-question retrieval | 0.923 | 0.988 |
 | Smoke | 29 | 100 | demo gold-question retrieval | not measured | 1.000 |
 | Main | 138 | 500 | demo gold-question retrieval | not measured | 0.978 |
 
-The real VLM run used Qwen2.5-VL-3B-Instruct on an NVIDIA GH200 GPU node through the public Isambard container `/lus/lfs1aip2/projects/public/u6ei/torch_cuda126.sif`. The 100-page run completed in 24m47s.
+The real VLM run used Qwen2.5-VL-3B-Instruct on an NVIDIA GH200 GPU node through the public Isambard container `/lus/lfs1aip2/projects/public/u6ei/torch_cuda126.sif`. The 100-page VLM inference run completed in 24m47s. The hybrid row adds a lightweight dense retrieval pass using `sentence-transformers/all-MiniLM-L6-v2` over the same Qwen summaries.
 
 On Isambard, verify the PyTorch build before VLM inference:
 

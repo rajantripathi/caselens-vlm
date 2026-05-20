@@ -19,11 +19,14 @@ These results were produced on Isambard using real DocVQA page images and Qwen2.
 | --- | --- | ---: | ---: | ---: |
 | Metadata-only | page id, doc id, page number, question type labels | 339 | 0.003 | 0.035 |
 | Qwen2.5-VL summaries | VLM-generated page descriptions and extracted visible text | 339 | 0.363 | 0.534 |
+| Hybrid Qwen summaries | BM25 over VLM summaries plus MiniLM dense embeddings | 339 | not measured | 0.587 |
 | Demo upper-bound | DocVQA question text included in index | 339 | 0.923 | 0.988 |
 
 ## Interpretation
 
 The strict VLM-summary index substantially improves retrieval over metadata-only indexing. Recall@5 increased from 0.035 to 0.534 on 339 real DocVQA questions, confirming the core project claim: visual page understanding provides useful retrieval evidence for scanned document question answering.
+
+A simple hybrid retriever improved Recall@5 again, from 0.534 to 0.587, by combining BM25 scores with dense MiniLM embeddings over the same Qwen-generated evidence. This is still a small portfolio-scale experiment, but it is closer to how an enterprise search stack would combine lexical and semantic retrieval.
 
 The demo upper-bound is intentionally not a valid production setting because it indexes gold question text. It is retained only as a pipeline sanity check.
 
@@ -40,5 +43,5 @@ Qwen2.5-VL generated useful page-level evidence, including visible text and layo
 
 - The 100-page result is a credible portfolio-scale benchmark, not a full DocVQA benchmark.
 - Some VLM outputs are markdown-wrapped JSON rather than strict parsed JSON.
-- Retrieval uses BM25 over generated summaries; embeddings are a natural next step.
+- Hybrid retrieval was tested with MiniLM embeddings; larger embedding models and reranking are natural next steps.
 - The model was run without a Hugging Face token, so larger runs may benefit from authenticated downloads.

@@ -8,7 +8,7 @@ CaseLens-VLM is a multimodal document RAG system for real scanned documents. It 
 
 - **Ingestion:** DocVQA saved dataset is converted into page images, page metadata, and QA records.
 - **Understanding:** Qwen2.5-VL generates page-level summaries and visible text/layout evidence.
-- **Retrieval:** BM25 indexes metadata or VLM summaries and returns cited page IDs.
+- **Retrieval:** BM25 and hybrid BM25+dense retrieval index metadata or VLM summaries and return cited page IDs.
 - **Evaluation:** DocVQA question-to-page labels are used to measure Recall@1 and Recall@5.
 - **Infrastructure:** GPU inference runs on Isambard GH200 using Apptainer and Slurm.
 
@@ -27,10 +27,10 @@ This maps to document intelligence workloads in regulated or operational setting
 
 ## Tradeoffs
 
-- BM25 is simple and reproducible, but embedding retrieval is the next natural upgrade.
+- BM25 is simple and reproducible; the hybrid run shows how dense embeddings can improve retrieval without changing the VLM evidence layer.
 - VLM summaries improve retrieval but cost more than metadata-only indexing.
 - The demo upper-bound indexes gold question text and is only a sanity check, not a valid production method.
 
 ## Result to Quote
 
-On a 339-question real DocVQA subset, VLM-summary retrieval improved Recall@5 from 0.035 metadata-only to 0.534 using Qwen2.5-VL summaries.
+On a 339-question real DocVQA subset, VLM-summary retrieval improved Recall@5 from 0.035 metadata-only to 0.534 using Qwen2.5-VL summaries. Adding MiniLM dense embeddings increased Recall@5 to 0.587.

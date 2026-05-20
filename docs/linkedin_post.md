@@ -19,12 +19,13 @@ Initial real result:
 
 - Metadata-only Recall@5: 0.035
 - Qwen2.5-VL summary Recall@5: 0.534
+- Hybrid BM25 + MiniLM Recall@5: 0.587
 
 This was measured on 100 real DocVQA pages covering 339 questions, using a GH200 GPU on Isambard.
 
 The main lesson: visual page understanding gives retrieval systems much better evidence than document metadata alone.
 
-Next step: scale the benchmark, add embedding retrieval, and compare OCR-only vs VLM-assisted retrieval.
+Next step: scale the benchmark, add reranking, and compare OCR-only vs VLM-assisted retrieval.
 
 GitHub: https://github.com/rajantripathi/caselens-vlm
 
@@ -40,11 +41,12 @@ The part I found most useful was comparing retrieval modes:
 
 - Metadata-only Recall@5: 0.035
 - Qwen2.5-VL summary Recall@5: 0.534
+- Hybrid BM25 + MiniLM Recall@5: 0.587
 - Demo upper-bound Recall@5: 0.988
 
 This was measured on 100 real scanned pages and 339 questions using an NVIDIA GH200 node on Isambard.
 
-I also added the pieces I would expect in an enterprise version: citation-level audit logs, grounding checks, an AWS architecture mapping, and a lightweight reviewer UI.
+I also added the pieces I would expect in an enterprise version: hybrid retrieval, citation-level audit logs, grounding checks, an AWS architecture mapping, and a lightweight reviewer UI.
 
 The project is not a production deployment, but it is a working implementation of the core pattern behind multimodal document intelligence: convert visual pages into evidence, retrieve with provenance, and evaluate the retrieval quality.
 
