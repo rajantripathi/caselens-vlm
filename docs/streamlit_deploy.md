@@ -1,6 +1,6 @@
 # Streamlit Demo Deployment
 
-The public Streamlit demo works without committing raw DocVQA images or generated model artifacts. It opens with verified metrics, a small bundled retrieval demo, and the enterprise architecture view.
+The public Streamlit demo works without committing raw DocVQA images or generated model artifacts. It opens with verified metrics, a bundled retrieval demo, an image-upload path for user-provided document pages, and the enterprise architecture view.
 
 ## Streamlit Community Cloud
 
@@ -10,6 +10,8 @@ The public Streamlit demo works without committing raw DocVQA images or generate
 4. No secrets are required for the public demo.
 
 The local-artifacts tab is for running the app inside the repo after generating DocVQA records and indexes on Isambard.
+
+The upload path in the public demo previews the image and indexes the visitor's visual note. It does not run a live VLM on Streamlit Community Cloud; the production architecture maps that step to Bedrock multimodal models or a GPU-hosted VLM endpoint.
 
 ## Local Run
 

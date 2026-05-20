@@ -186,7 +186,7 @@ python scripts/audit_run.py --index index.json --records RECORDS --question "...
 
 The app has two modes:
 
-- **Public demo mode:** works on Streamlit Community Cloud without raw DocVQA images or generated artifacts.
+- **Public demo mode:** works on Streamlit Community Cloud without raw DocVQA images or generated artifacts, and accepts uploaded document images as demo evidence.
 - **Local artifact mode:** shows retrieved page images when the Isambard-generated DocVQA files are available.
 
 Launch locally:
@@ -195,7 +195,7 @@ Launch locally:
 streamlit run app.py
 ```
 
-The app shows verified benchmark metrics, a small live retrieval demo, an enterprise architecture view, and an optional local viewer for generated records. See `docs/streamlit_deploy.md` for deployment notes.
+The app shows verified benchmark metrics, a live retrieval demo with image upload, an enterprise architecture view, and an optional local viewer for generated records. See `docs/streamlit_deploy.md` for deployment notes.
 
 ## Repository Policy
 

@@ -3,6 +3,7 @@ from __future__ import annotations
 from pathlib import Path
 from typing import Any
 
+from PIL import Image
 import streamlit as st
 
 from src.caselens.io import read_json, read_jsonl
@@ -144,6 +145,40 @@ def build_index(records: list[dict[str, Any]]) -> BM25Index:
     return BM25Index.from_records(records, text_field="vlm_summary")
 
 
+def uploaded_image_record(uploaded_file, visual_note: str) -> dict[str, Any] | None:
+    if uploaded_file is None:
+        return None
+    image_bytes = uploaded_file.getvalue()
+    image = Image.open(uploaded_file)
+    width, height = image.size
+    summary = visual_note.strip() or (
+        "User-uploaded document image. In a production deployment this page would be sent "
+        "through OCR/layout extraction and a VLM to generate searchable evidence."
+    )
+    return {
+        "page_id": "uploaded_page",
+        "document_id": "uploaded_document",
+        "page_no": "uploaded",
+        "image_path": uploaded_file.name,
+        "image_width": width,
+        "image_height": height,
+        "question_types": ["uploaded_image", "visual_evidence"],
+        "page_summary": summary,
+        "visual_summary": (
+            f"Uploaded image evidence, {width}x{height} pixels. {summary} "
+            "This record is included in retrieval to demonstrate the multimodal ingestion path."
+        ),
+        "detected_elements": ["uploaded image", "document page"],
+        "qas": [
+            {
+                "question": "What did the user upload?",
+                "answers": [uploaded_file.name],
+            }
+        ],
+        "_uploaded_image": image_bytes,
+    }
+
+
 def render_metrics() -> None:
     st.subheader("Verified Retrieval Results")
     cols = st.columns(4)
@@ -166,7 +201,9 @@ def render_record(result_rank: int, result, record: dict[str, Any], image_root: 
 
         left, right = st.columns([1, 2])
         image_path = image_root / record["image_path"] if image_root else None
-        if image_path and image_path.exists():
+        if record.get("_uploaded_image"):
+            left.image(record["_uploaded_image"], caption=record["image_path"], use_container_width=True)
+        elif image_path and image_path.exists():
             left.image(str(image_path), caption=record["image_path"], use_container_width=True)
         else:
             left.info("Image omitted from the public demo. The local app shows page images when DocVQA artifacts are available.")
@@ -180,20 +217,46 @@ def render_record(result_rank: int, result, record: dict[str, Any], image_root: 
 
 def demo_retrieval() -> None:
     st.subheader("Live Retrieval Demo")
-    st.caption("This public demo uses bundled evidence snippets derived from the real DocVQA/Qwen3 run. Raw DocVQA images are not committed.")
+    st.caption(
+        "This public demo uses bundled evidence snippets derived from the real DocVQA/Qwen3 run. "
+        "You can also upload an image to exercise the multimodal ingestion path."
+    )
+    upload_col, note_col = st.columns([1, 2])
+    uploaded_file = upload_col.file_uploader(
+        "Upload a document image",
+        type=["png", "jpg", "jpeg"],
+        help="The public demo previews the image and indexes your note. The production path would run OCR and VLM inference.",
+    )
+    visual_note = note_col.text_area(
+        "Visual evidence note for uploaded image",
+        value="",
+        placeholder="Example: invoice page with supplier name, total amount, date, and line-item table",
+        height=96,
+    )
+
+    records_for_demo = list(DEMO_RECORDS)
+    upload_record = uploaded_image_record(uploaded_file, visual_note)
+    if upload_record:
+        records_for_demo.insert(0, upload_record)
+        st.info(
+            "Uploaded image added as a retrievable evidence record. "
+            "For the GitHub demo, the note stands in for live VLM/OCR inference."
+        )
+
     examples = [
         "What is the PD?",
         "Which page mentions the PepsiCo annual meeting?",
         "Which page contains adverse-effect columns?",
         "Where is budget evidence mentioned?",
+        "What did I upload?",
     ]
     question = st.selectbox("Try a question", examples)
     custom = st.text_input("Or enter your own question", "")
     query = custom.strip() or question
     k = st.slider("Cited pages", min_value=1, max_value=4, value=3, key="demo_k")
 
-    index = build_index(DEMO_RECORDS)
-    records = {record["page_id"]: record for record in DEMO_RECORDS}
+    index = build_index(records_for_demo)
+    records = {record["page_id"]: record for record in records_for_demo}
     results = index.search(query, k=k)
 
     st.markdown("**Retrieved evidence**")
