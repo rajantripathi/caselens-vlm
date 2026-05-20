@@ -33,4 +33,4 @@ This maps to document intelligence workloads in regulated or operational setting
 
 ## Result to Quote
 
-On a real DocVQA subset, VLM-summary retrieval improved Recall@5 from 0.145 metadata-only to 0.605 using Qwen2.5-VL summaries.
+On a 339-question real DocVQA subset, VLM-summary retrieval improved Recall@5 from 0.035 metadata-only to 0.534 using Qwen2.5-VL summaries.

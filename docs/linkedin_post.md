@@ -15,8 +15,10 @@ What I implemented:
 
 Initial real result:
 
-- Metadata-only Recall@5: 0.145
-- Qwen2.5-VL summary Recall@5: 0.605
+- Metadata-only Recall@5: 0.035
+- Qwen2.5-VL summary Recall@5: 0.534
+
+This was measured on 100 real DocVQA pages covering 339 questions, using a GH200 GPU on Isambard.
 
 The main lesson: visual page understanding gives retrieval systems much better evidence than document metadata alone.
 

@@ -2,7 +2,7 @@
 
 ## CV Bullet
 
-Built **CaseLens-VLM**, a multimodal document RAG system over real DocVQA scanned documents using Qwen2.5-VL-generated page summaries, BM25 retrieval, cited question answering, and Recall@k evaluation on Isambard GH200 GPU infrastructure; improved Recall@5 from 0.145 with metadata-only retrieval to 0.605 with VLM summaries on a 76-question real DocVQA subset.
+Built **CaseLens-VLM**, a multimodal document RAG system over real DocVQA scanned documents using Qwen2.5-VL-generated page summaries, BM25 retrieval, cited question answering, and Recall@k evaluation on Isambard GH200 GPU infrastructure; improved Recall@5 from 0.035 with metadata-only retrieval to 0.534 with VLM summaries on a 339-question real DocVQA subset.
 
 ## Interview Explanation
 
