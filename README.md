@@ -124,20 +124,22 @@ python scripts/ask.py \
   --k 3
 ```
 
-## Current Verified Baseline
+## Current Verified Results
 
-The project now has both a demo baseline and real Qwen2.5-VL results. Full details are in `docs/results.md`.
+The project now has real Qwen2.5-VL and Qwen3-VL results over the same DocVQA page subset. Full details are in `docs/results.md`.
 
 | Sample | Pages | Questions | Mode | Recall@1 | Recall@5 |
 | --- | ---: | ---: | --- | ---: | ---: |
-| Qwen real run | 100 | 339 | hybrid BM25 + MiniLM embeddings | not measured | 0.587 |
-| Qwen real run | 100 | 339 | strict VLM-summary retrieval | 0.363 | 0.534 |
+| Qwen3-VL real run | 100 | 339 | hybrid BM25 + MiniLM embeddings | not measured | 0.708 |
+| Qwen3-VL real run | 100 | 339 | strict VLM-summary retrieval | 0.445 | 0.658 |
+| Qwen2.5-VL real run | 100 | 339 | hybrid BM25 + MiniLM embeddings | not measured | 0.587 |
+| Qwen2.5-VL real run | 100 | 339 | strict VLM-summary retrieval | 0.363 | 0.534 |
 | Same subset | 100 | 339 | metadata-only retrieval | 0.003 | 0.035 |
 | Same subset | 100 | 339 | demo gold-question retrieval | 0.923 | 0.988 |
 | Smoke | 29 | 100 | demo gold-question retrieval | not measured | 1.000 |
 | Main | 138 | 500 | demo gold-question retrieval | not measured | 0.978 |
 
-The real VLM run used Qwen2.5-VL-3B-Instruct on an NVIDIA GH200 GPU node through the public Isambard container `/lus/lfs1aip2/projects/public/u6ei/torch_cuda126.sif`. The 100-page VLM inference run completed in 24m47s. The hybrid row adds a lightweight dense retrieval pass using `sentence-transformers/all-MiniLM-L6-v2` over the same Qwen summaries.
+The Qwen2.5-VL-3B 100-page inference run completed in 24m47s. The Qwen3-VL-8B challenger run completed in 30m42s using a capped visual token budget. Both used an NVIDIA GH200 GPU node through the public Isambard container `/lus/lfs1aip2/projects/public/u6ei/torch_cuda126.sif`. Hybrid rows add a lightweight dense retrieval pass using `sentence-transformers/all-MiniLM-L6-v2` over the same VLM summaries.
 
 On Isambard, verify the PyTorch build before VLM inference:
 
@@ -181,7 +183,7 @@ This repo intentionally excludes:
 - Slurm logs
 
 See `docs/aws_architecture.md` for the AWS implementation mapping and `docs/cv_project_summary.md` for a concise portfolio summary.
-See `docs/results.md` for real Qwen2.5-VL retrieval metrics.
+See `docs/results.md` for real Qwen2.5-VL and Qwen3-VL retrieval metrics.
 See `docs/linkedin_post.md` and `docs/interview_talking_points.md` for company-facing materials.
 See `docs/enterprise_architecture.md` for the guardrails, audit, and monitoring design.
 See `docs/reference_architecture.md` for a publishable enterprise AWS reference architecture.

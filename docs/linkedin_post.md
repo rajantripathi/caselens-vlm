@@ -8,18 +8,20 @@ Most RAG demos assume clean text. Real enterprise documents are messier: scanned
 
 What I implemented:
 
-- Qwen2.5-VL page understanding over real DocVQA page images
+- Qwen2.5-VL and Qwen3-VL page understanding over real DocVQA page images
 - Page-level evidence summaries with cited retrieval
 - BM25 retrieval over VLM-generated visual summaries
 - Recall@k evaluation against DocVQA question/page labels
 - Isambard GH200 GPU batch inference using Apptainer
 - AWS architecture mapping for a managed enterprise version
 
-Initial real result:
+Measured result:
 
 - Metadata-only Recall@5: 0.035
 - Qwen2.5-VL summary Recall@5: 0.534
-- Hybrid BM25 + MiniLM Recall@5: 0.587
+- Qwen2.5-VL hybrid Recall@5: 0.587
+- Qwen3-VL summary Recall@5: 0.658
+- Qwen3-VL hybrid Recall@5: 0.708
 
 This was measured on 100 real DocVQA pages covering 339 questions, using a GH200 GPU on Isambard.
 
@@ -35,13 +37,15 @@ GitHub: https://github.com/rajantripathi/caselens-vlm
 
 I have been working on **CaseLens-VLM**, a small but realistic multimodal document AI pipeline.
 
-The pipeline takes real DocVQA page images, generates page-level evidence with Qwen2.5-VL, indexes those summaries, retrieves cited pages for questions, and evaluates Recall@k against DocVQA labels.
+The pipeline takes real DocVQA page images, generates page-level evidence with open VLMs, indexes those summaries, retrieves cited pages for questions, and evaluates Recall@k against DocVQA labels.
 
 The part I found most useful was comparing retrieval modes:
 
 - Metadata-only Recall@5: 0.035
 - Qwen2.5-VL summary Recall@5: 0.534
-- Hybrid BM25 + MiniLM Recall@5: 0.587
+- Qwen2.5-VL hybrid Recall@5: 0.587
+- Qwen3-VL summary Recall@5: 0.658
+- Qwen3-VL hybrid Recall@5: 0.708
 - Demo upper-bound Recall@5: 0.988
 
 This was measured on 100 real scanned pages and 339 questions using an NVIDIA GH200 node on Isambard.
