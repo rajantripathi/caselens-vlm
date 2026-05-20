@@ -1,20 +1,20 @@
 # CaseLens-VLM
 
-**CaseLens-VLM** is a multimodal document RAG prototype for evidence review over real scanned document images from DocVQA. It prepares document pages, generates page-level visual evidence with a VLM, builds a retrieval index, answers questions with cited pages, and reports retrieval metrics.
+**CaseLens-VLM** is a multimodal document retrieval project over real scanned DocVQA pages. It uses a vision-language model to turn page images into searchable evidence, retrieves cited pages for questions, and evaluates retrieval quality with Recall@k.
 
-The project is designed as a CV-ready applied GenAI project: small enough to reproduce, but close to the architecture used in enterprise document intelligence systems.
+I built this to test a practical question: when documents are scanned pages, tables, forms, and layout-heavy reports, how much does visual page understanding help retrieval compared with metadata alone?
 
-## Why This Project
+## Problem
 
 Most enterprise RAG demos assume clean text. Real documents often contain scanned pages, forms, charts, tables, signatures, and layout cues. CaseLens-VLM shows how to convert document images into retrievable multimodal evidence.
 
-This project demonstrates:
+## What This Does
 
 - Vision-language model inference on document pages
 - Multimodal RAG over real document images
 - Page-level citation and retrieval evaluation
 - Isambard/HPC batch workflow
-- AWS GenAI architecture mapping
+- Local grounding audit and AWS GenAI architecture mapping
 
 ## Dataset
 
@@ -142,6 +142,7 @@ python scripts/generate_vlm_summaries.py --records page_records.jsonl --image-ro
 python scripts/build_index.py --records RECORDS --out index.json --text-field metadata|vlm_summary
 python scripts/ask.py --index index.json --records RECORDS --question "..." --k 5
 python scripts/evaluate_retrieval.py --index index.json --records RECORDS --qas qa_records.jsonl --k 5
+python scripts/audit_run.py --index index.json --records RECORDS --question "..." --answer "..." --out audit.jsonl
 ```
 
 ## Streamlit Demo
@@ -166,6 +167,7 @@ This repo intentionally excludes:
 See `docs/aws_architecture.md` for the AWS implementation mapping and `docs/cv_project_summary.md` for a concise portfolio summary.
 See `docs/results.md` for real Qwen2.5-VL retrieval metrics.
 See `docs/linkedin_post.md` and `docs/interview_talking_points.md` for company-facing materials.
+See `docs/enterprise_architecture.md` for the guardrails, audit, and monitoring design.
 
 ## Limitations
 
