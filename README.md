@@ -27,14 +27,14 @@ Useful references:
 
 ## Architecture
 
-```text
-DocVQA saved dataset
-  -> page image export
-  -> page evidence JSONL
-  -> VLM page summaries
-  -> retrieval index
-  -> cited document QA
-  -> Recall@k evaluation
+```mermaid
+flowchart LR
+    A[DocVQA saved dataset] --> B[Page image export]
+    B --> C[Page evidence JSONL]
+    C --> D[Qwen2.5-VL page summaries]
+    D --> E[Retrieval index]
+    E --> F[Cited document QA]
+    F --> G[Recall@k evaluation]
 ```
 
 ## Isambard Quickstart
@@ -88,7 +88,8 @@ python scripts/generate_vlm_summaries.py \
   --image-root data/docvqa_sample \
   --out data/docvqa_sample/vlm_page_summaries.jsonl \
   --model Qwen/Qwen2.5-VL-3B-Instruct \
-  --limit 20
+  --limit 100 \
+  --resume
 ```
 
 Build a strict VLM-summary index:
@@ -141,6 +142,16 @@ python scripts/ask.py --index index.json --records RECORDS --question "..." --k 
 python scripts/evaluate_retrieval.py --index index.json --records RECORDS --qas qa_records.jsonl --k 5
 ```
 
+## Streamlit Demo
+
+After generating local artifacts, launch the reviewer UI:
+
+```bash
+streamlit run app.py
+```
+
+The app lets you enter a question, retrieve cited pages, inspect page images, and read the VLM-generated evidence summary.
+
 ## Repository Policy
 
 This repo intentionally excludes:
@@ -152,6 +163,7 @@ This repo intentionally excludes:
 
 See `docs/aws_architecture.md` for the AWS implementation mapping and `docs/cv_project_summary.md` for a concise portfolio summary.
 See `docs/results.md` for real Qwen2.5-VL retrieval metrics.
+See `docs/linkedin_post.md` and `docs/interview_talking_points.md` for company-facing materials.
 
 ## Limitations
 

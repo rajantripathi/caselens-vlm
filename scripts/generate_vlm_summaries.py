@@ -9,7 +9,7 @@ from typing import Any
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "src"))
 
-from caselens.io import read_jsonl, write_jsonl
+from caselens.io import read_jsonl
 
 
 PROMPT = """You are building page-level evidence for document question answering.
@@ -28,6 +28,7 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--limit", type=int, default=0)
     parser.add_argument("--mock", action="store_true", help="Generate deterministic summaries without loading a VLM")
     parser.add_argument("--max-new-tokens", type=int, default=256)
+    parser.add_argument("--resume", action="store_true", help="Append missing page summaries to an existing output file")
     return parser.parse_args()
 
 
@@ -96,31 +97,47 @@ def main() -> None:
     if args.limit:
         records = records[: args.limit]
 
+    out_path = Path(args.out)
+    out_path.parent.mkdir(parents=True, exist_ok=True)
+    completed: set[str] = set()
+    if args.resume and out_path.exists():
+        for item in read_jsonl(out_path):
+            completed.add(item["page_id"])
+        records = [record for record in records if record["page_id"] not in completed]
+
     image_root = Path(args.image_root)
-    outputs: list[dict[str, Any]] = []
 
     model = processor = None
     if not args.mock:
         model, processor = load_qwen(args.model)
 
-    for record in records:
-        if args.mock:
-            outputs.append(mock_summary(record, args.model))
-            continue
-        image_path = image_root / record["image_path"]
-        raw_text = qwen_summary(model, processor, image_path, args.model, args.max_new_tokens)
-        outputs.append(
-            {
-                **record,
-                "visual_summary": raw_text,
-                "detected_elements": record.get("question_types", []),
-                "answer_relevant_text": raw_text,
-                "model_name": args.model,
-            }
-        )
+    mode = "a" if args.resume else "w"
+    written = 0
+    with out_path.open(mode, encoding="utf-8") as handle:
+        for record in records:
+            if args.mock:
+                output = mock_summary(record, args.model)
+            else:
+                image_path = image_root / record["image_path"]
+                raw_text = qwen_summary(model, processor, image_path, args.model, args.max_new_tokens)
+                output = {
+                    **record,
+                    "visual_summary": raw_text,
+                    "detected_elements": record.get("question_types", []),
+                    "answer_relevant_text": raw_text,
+                    "model_name": args.model,
+                }
+            import json
 
-    write_jsonl(args.out, outputs)
-    print(f"Wrote {len(outputs)} VLM summary records -> {args.out}")
+            handle.write(json.dumps(output, ensure_ascii=True) + "\n")
+            handle.flush()
+            written += 1
+            print(f"wrote {written}/{len(records)} page_id={record['page_id']}", flush=True)
+
+    print(
+        f"Wrote {written} VLM summary records -> {args.out}"
+        + (f" ({len(completed)} already completed)" if completed else "")
+    )
 
 
 if __name__ == "__main__":
