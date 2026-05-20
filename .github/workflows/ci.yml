@@ -16,11 +16,15 @@ jobs:
         with:
           python-version: "3.11"
 
+      - name: Install runtime dependencies
+        run: pip install -r requirements.txt
+
       - name: Compile Python sources
         run: python -m compileall app.py scripts src
 
       - name: Check CLI entry points
         run: |
+          python -c "import app"
           python scripts/generate_vlm_summaries.py --help
           python scripts/build_index.py --help
           python scripts/evaluate_retrieval.py --help

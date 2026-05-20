@@ -184,13 +184,18 @@ python scripts/audit_run.py --index index.json --records RECORDS --question "...
 
 ## Streamlit Demo
 
-After generating local artifacts, launch the reviewer UI:
+The app has two modes:
+
+- **Public demo mode:** works on Streamlit Community Cloud without raw DocVQA images or generated artifacts.
+- **Local artifact mode:** shows retrieved page images when the Isambard-generated DocVQA files are available.
+
+Launch locally:
 
 ```bash
 streamlit run app.py
 ```
 
-The app lets you enter a question, retrieve cited pages, inspect page images, and read the VLM-generated evidence summary.
+The app shows verified benchmark metrics, a small live retrieval demo, an enterprise architecture view, and an optional local viewer for generated records. See `docs/streamlit_deploy.md` for deployment notes.
 
 ## Repository Policy
 
