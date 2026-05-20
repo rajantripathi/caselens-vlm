@@ -6,22 +6,22 @@ This is the production version of the pattern tested in CaseLens-VLM: convert vi
 
 ```mermaid
 flowchart LR
-    A[Users / business systems] --> B[Upload API]
-    B --> C[S3 document landing zone]
-    C --> D[Document preprocessing]
-    D --> E[OCR and layout extraction]
-    D --> F[VLM page understanding]
-    E --> G[Evidence record builder]
+    A["Users and business systems"] --> B["Upload API"]
+    B --> C["S3 document landing zone"]
+    C --> D["Document preprocessing"]
+    D --> E["OCR and layout extraction"]
+    D --> F["VLM page understanding"]
+    E --> G["Evidence record builder"]
     F --> G
-    G --> H[Vector and lexical indexes]
-    A --> I[Question answering API]
-    I --> J[Retriever]
+    G --> H["Vector and lexical indexes"]
+    A --> I["Question answering API"]
+    I --> J["Retriever"]
     H --> J
-    J --> K[Reranker]
-    K --> L[Answer generation]
-    L --> M[Grounding and policy guardrails]
-    M --> N[Reviewer UI]
-    M --> O[Audit log and metrics]
+    J --> K["Reranker"]
+    K --> L["Answer generation"]
+    L --> M["Grounding and policy guardrails"]
+    M --> N["Reviewer UI"]
+    M --> O["Audit log and metrics"]
 ```
 
 ## AWS Service Mapping

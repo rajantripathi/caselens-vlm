@@ -1,20 +1,34 @@
 # CaseLens-VLM
 
-**CaseLens-VLM** is a multimodal document retrieval project over real scanned DocVQA pages. It uses a vision-language model to turn page images into searchable evidence, retrieves cited pages for questions, and evaluates retrieval quality with Recall@k.
+**Enterprise multimodal document intelligence with VLMs, hybrid retrieval, citations, and audit controls.**
 
-I built this to test a practical question: when documents are scanned pages, tables, forms, and layout-heavy reports, how much does visual page understanding help retrieval compared with metadata alone?
+CaseLens-VLM is a portfolio-grade multimodal RAG pipeline over real scanned DocVQA pages. It uses open vision-language models to turn page images into searchable evidence, retrieves cited pages for questions, evaluates retrieval quality, and maps the same pattern to an enterprise AWS reference architecture.
+
+I built this around a practical question: when documents are scanned pages, forms, tables, handwriting, and layout-heavy reports, how much does visual page understanding improve retrieval compared with metadata alone?
+
+## Highlights
+
+| Capability | What is implemented |
+| --- | --- |
+| Real data | DocVQA scanned document pages from the UCSF Industry Documents Library |
+| VLM evidence | Qwen2.5-VL and Qwen3-VL page-level visual summaries |
+| Retrieval | BM25 baseline plus MiniLM dense hybrid retrieval |
+| Evaluation | Same 100-page / 339-question subset across all retrieval modes |
+| Governance | Local citation audit, grounding checks, reviewer-oriented UI, AWS guardrail mapping |
+| Infrastructure | Isambard GH200 GPU batch workflow with reproducible Slurm scripts |
 
 ## Problem
 
-Most enterprise RAG demos assume clean text. Real documents often contain scanned pages, forms, charts, tables, signatures, and layout cues. CaseLens-VLM shows how to convert document images into retrievable multimodal evidence.
+Most enterprise RAG demos assume clean extracted text. Real document estates are messier: scanned pages, forms, charts, tables, signatures, handwriting, and visual layout cues. CaseLens-VLM shows how to convert those pages into retrievable evidence while preserving page-level provenance.
 
 ## What This Does
 
-- Vision-language model inference on document pages
-- Multimodal RAG over real document images
-- Page-level citation and retrieval evaluation
-- Isambard/HPC batch workflow
-- Local grounding audit and enterprise AWS reference architecture
+- Runs VLM inference over document page images
+- Builds page-level evidence records with provenance
+- Indexes VLM evidence with lexical and hybrid retrieval
+- Answers questions with cited source pages
+- Evaluates retrieval with real DocVQA question-to-page labels
+- Provides audit, guardrail, and AWS reference-architecture material
 
 ## Dataset
 
@@ -30,13 +44,18 @@ Useful references:
 
 ```mermaid
 flowchart LR
-    A[DocVQA saved dataset] --> B[Page image export]
-    B --> C[Page evidence JSONL]
-    C --> D[Qwen2.5-VL page summaries]
-    D --> E[Retrieval index]
-    E --> F[Cited document QA]
-    F --> G[Recall@k evaluation]
+    A["DocVQA scanned pages"] --> B["Page extraction"]
+    B --> C["OCR and metadata"]
+    B --> D["VLM page understanding"]
+    C --> E["Evidence records"]
+    D --> E
+    E --> F["BM25 and vector indexes"]
+    F --> G["Cited question answering"]
+    G --> H["Grounding audit"]
+    H --> I["Retrieval evaluation"]
 ```
+
+The publishable enterprise version is documented in [`docs/reference_architecture.md`](docs/reference_architecture.md).
 
 ## Isambard Quickstart
 

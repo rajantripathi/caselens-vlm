@@ -6,16 +6,16 @@ CaseLens-VLM is not deployed as a production AWS system. This document shows how
 
 ```mermaid
 flowchart LR
-    A[Document store] --> B[Page extraction]
-    B --> C[OCR / layout extraction]
-    B --> D[VLM page understanding]
-    C --> E[Evidence records]
+    A["Document store"] --> B["Page extraction"]
+    B --> C["OCR and layout extraction"]
+    B --> D["VLM page understanding"]
+    C --> E["Evidence records"]
     D --> E
-    E --> F[Retrieval index]
-    F --> G[Question answering]
-    G --> H[Grounding guardrail]
-    H --> I[Audit log]
-    I --> J[Evaluation and monitoring]
+    E --> F["Retrieval index"]
+    F --> G["Question answering"]
+    G --> H["Grounding guardrail"]
+    H --> I["Audit log"]
+    I --> J["Evaluation and monitoring"]
 ```
 
 ## Runtime Responsibilities

@@ -1,0 +1,28 @@
+name: CI
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  smoke:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Compile Python sources
+        run: python -m compileall app.py scripts src
+
+      - name: Check CLI entry points
+        run: |
+          python scripts/generate_vlm_summaries.py --help
+          python scripts/build_index.py --help
+          python scripts/evaluate_retrieval.py --help
+          python scripts/evaluate_hybrid_retrieval.py --help
+          python scripts/audit_run.py --help
