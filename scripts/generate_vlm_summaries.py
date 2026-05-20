@@ -25,6 +25,12 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--image-root", required=True, help="Directory that image paths are relative to")
     parser.add_argument("--out", required=True)
     parser.add_argument("--model", default="Qwen/Qwen2.5-VL-3B-Instruct")
+    parser.add_argument(
+        "--backend",
+        choices=["auto", "qwen25", "qwen3"],
+        default="auto",
+        help="Model loading path. auto selects qwen3 for Qwen3-VL model names, otherwise qwen25.",
+    )
     parser.add_argument("--local-files-only", action="store_true", help="Do not call Hugging Face Hub APIs")
     parser.add_argument("--limit", type=int, default=0)
     parser.add_argument("--mock", action="store_true", help="Generate deterministic summaries without loading a VLM")
@@ -47,7 +53,16 @@ def mock_summary(record: dict[str, Any], model_name: str) -> dict[str, Any]:
     }
 
 
-def load_qwen(model_name: str, local_files_only: bool = False):
+def resolve_backend(model_name: str, backend: str) -> str:
+    if backend != "auto":
+        return backend
+    name = model_name.lower()
+    if "qwen3-vl" in name or "qwen3vl" in name:
+        return "qwen3"
+    return "qwen25"
+
+
+def load_qwen25(model_name: str, local_files_only: bool = False):
     import torch
     from transformers import AutoProcessor, Qwen2_5_VLForConditionalGeneration
 
@@ -59,6 +74,37 @@ def load_qwen(model_name: str, local_files_only: bool = False):
     )
     processor = AutoProcessor.from_pretrained(model_name, local_files_only=local_files_only)
     return model, processor
+
+
+def load_qwen3(model_name: str, local_files_only: bool = False):
+    import torch
+    from transformers import AutoModelForImageTextToText, AutoProcessor
+
+    kwargs = {
+        "device_map": "auto",
+        "local_files_only": local_files_only,
+    }
+    try:
+        model = AutoModelForImageTextToText.from_pretrained(
+            model_name,
+            dtype=torch.bfloat16,
+            **kwargs,
+        )
+    except TypeError:
+        model = AutoModelForImageTextToText.from_pretrained(
+            model_name,
+            torch_dtype=torch.bfloat16,
+            **kwargs,
+        )
+    processor = AutoProcessor.from_pretrained(model_name, local_files_only=local_files_only)
+    return model, processor
+
+
+def load_model(model_name: str, backend: str, local_files_only: bool = False):
+    resolved = resolve_backend(model_name, backend)
+    if resolved == "qwen3":
+        return (*load_qwen3(model_name, local_files_only=local_files_only), resolved)
+    return (*load_qwen25(model_name, local_files_only=local_files_only), resolved)
 
 
 def qwen_summary(model, processor, image_path: Path, model_name: str, max_new_tokens: int) -> str:
@@ -110,8 +156,13 @@ def main() -> None:
     image_root = Path(args.image_root)
 
     model = processor = None
+    backend = resolve_backend(args.model, args.backend)
     if not args.mock:
-        model, processor = load_qwen(args.model, local_files_only=args.local_files_only)
+        model, processor, backend = load_model(
+            args.model,
+            backend=args.backend,
+            local_files_only=args.local_files_only,
+        )
 
     mode = "a" if args.resume else "w"
     written = 0
@@ -128,6 +179,7 @@ def main() -> None:
                     "detected_elements": record.get("question_types", []),
                     "answer_relevant_text": raw_text,
                     "model_name": args.model,
+                    "model_backend": backend,
                 }
             import json
 

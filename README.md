@@ -14,7 +14,7 @@ Most enterprise RAG demos assume clean text. Real documents often contain scanne
 - Multimodal RAG over real document images
 - Page-level citation and retrieval evaluation
 - Isambard/HPC batch workflow
-- Local grounding audit and AWS GenAI architecture mapping
+- Local grounding audit and enterprise AWS reference architecture
 
 ## Dataset
 
@@ -24,6 +24,7 @@ Useful references:
 
 - DocVQA dataset: https://site.docvqa.org/datasets/docvqa
 - Qwen2.5-VL model family: https://huggingface.co/Qwen/Qwen2.5-VL-7B-Instruct
+- Qwen3-VL model family: https://huggingface.co/Qwen/Qwen3-VL-8B-Instruct
 
 ## Architecture
 
@@ -88,6 +89,20 @@ python scripts/generate_vlm_summaries.py \
   --image-root data/docvqa_sample \
   --out data/docvqa_sample/vlm_page_summaries.jsonl \
   --model Qwen/Qwen2.5-VL-3B-Instruct \
+  --backend auto \
+  --limit 100 \
+  --resume
+```
+
+To compare a stronger challenger model on the same pages, use:
+
+```bash
+python scripts/generate_vlm_summaries.py \
+  --records data/docvqa_sample/page_records.jsonl \
+  --image-root data/docvqa_sample \
+  --out data/docvqa_sample/vlm_qwen3_8b_100.jsonl \
+  --model Qwen/Qwen3-VL-8B-Instruct \
+  --backend qwen3 \
   --limit 100 \
   --resume
 ```
@@ -169,6 +184,7 @@ See `docs/aws_architecture.md` for the AWS implementation mapping and `docs/cv_p
 See `docs/results.md` for real Qwen2.5-VL retrieval metrics.
 See `docs/linkedin_post.md` and `docs/interview_talking_points.md` for company-facing materials.
 See `docs/enterprise_architecture.md` for the guardrails, audit, and monitoring design.
+See `docs/reference_architecture.md` for a publishable enterprise AWS reference architecture.
 
 ## Limitations
 

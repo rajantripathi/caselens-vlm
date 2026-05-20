@@ -42,6 +42,8 @@ flowchart LR
 | Guardrails | Bedrock Guardrails contextual grounding and automated reasoning checks |
 | Audit and monitoring | CloudWatch Logs, CloudWatch metrics, S3 audit archive |
 
+For a fuller publishable design, including IAM, KMS, reranking, human review, and operational metrics, see `docs/reference_architecture.md`.
+
 ## Guardrail Design
 
 The local project implements a lightweight grounding audit: an answer is flagged when it does not cite retrieved pages. In a managed AWS version, the same intent maps to Bedrock Guardrails contextual grounding checks and policy-specific validation.
