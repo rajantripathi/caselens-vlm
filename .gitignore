@@ -1,0 +1,33 @@
+# Python
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.venv/
+venv/
+
+# Generated data and model artifacts
+data/
+models/
+checkpoints/
+*.safetensors
+*.bin
+*.pt
+*.pth
+*.gguf
+
+# HPC / logs
+logs/
+slurm-*.out
+*.err
+*.out
+core
+
+# macOS metadata
+.DS_Store
+._*
+
+# Local transfer/build artifacts
+*.tgz
+.pycache_compile/
