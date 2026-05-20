@@ -1,0 +1,5 @@
+# Install after choosing a PyTorch build compatible with your GPU driver.
+# On managed HPC systems, prefer the site-recommended PyTorch/CUDA module or wheel.
+transformers>=4.49.0
+accelerate>=0.34.0
+qwen-vl-utils>=0.0.8

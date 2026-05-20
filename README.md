@@ -80,6 +80,9 @@ python scripts/evaluate_retrieval.py \
 Generate VLM page summaries:
 
 ```bash
+# Install a GPU-compatible PyTorch build first, then:
+pip install -r requirements-vlm.txt
+
 python scripts/generate_vlm_summaries.py \
   --records data/docvqa_sample/page_records.jsonl \
   --image-root data/docvqa_sample \
@@ -114,6 +117,17 @@ The demo baseline indexes DocVQA question text to verify the retrieval and evalu
 
 The VLM-summary mode is the real multimodal path and is designed to run on Isambard GPU nodes via `slurm/run_vlm_summaries.sbatch`.
 
+On Isambard, verify the PyTorch build before VLM inference:
+
+```bash
+python - << 'EOF'
+import torch
+print(torch.__version__)
+print("cuda_available:", torch.cuda.is_available())
+print("torch_cuda:", torch.version.cuda)
+EOF
+```
+
 ## CLI Reference
 
 ```bash
@@ -139,4 +153,5 @@ See `docs/aws_architecture.md` for the AWS implementation mapping and `docs/cv_p
 
 - The demo baseline uses DocVQA question text and is only a pipeline sanity check.
 - The strict VLM path depends on downloading and running a VLM such as Qwen2.5-VL-3B.
+- PyTorch/CUDA installation is cluster-specific; use a build compatible with the active NVIDIA driver.
 - Official DocVQA OCR transcriptions are not bundled in the Hugging Face mirror used here.
