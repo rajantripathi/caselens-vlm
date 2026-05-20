@@ -26,6 +26,11 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--out", required=True)
     parser.add_argument("--model", default="Qwen/Qwen2.5-VL-3B-Instruct")
     parser.add_argument(
+        "--model-label",
+        default="",
+        help="Human-readable model name to store in output records when --model is a local snapshot path.",
+    )
+    parser.add_argument(
         "--backend",
         choices=["auto", "qwen25", "qwen3"],
         default="auto",
@@ -35,6 +40,18 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--limit", type=int, default=0)
     parser.add_argument("--mock", action="store_true", help="Generate deterministic summaries without loading a VLM")
     parser.add_argument("--max-new-tokens", type=int, default=256)
+    parser.add_argument(
+        "--max-pixels",
+        type=int,
+        default=0,
+        help="Optional visual token budget passed to Qwen processors, e.g. 501760 for 640*28*28.",
+    )
+    parser.add_argument(
+        "--min-pixels",
+        type=int,
+        default=0,
+        help="Optional minimum visual token budget passed to Qwen processors.",
+    )
     parser.add_argument("--resume", action="store_true", help="Append missing page summaries to an existing output file")
     return parser.parse_args()
 
@@ -62,7 +79,21 @@ def resolve_backend(model_name: str, backend: str) -> str:
     return "qwen25"
 
 
-def load_qwen25(model_name: str, local_files_only: bool = False):
+def processor_kwargs(local_files_only: bool, min_pixels: int, max_pixels: int) -> dict[str, Any]:
+    kwargs: dict[str, Any] = {"local_files_only": local_files_only}
+    if min_pixels:
+        kwargs["min_pixels"] = min_pixels
+    if max_pixels:
+        kwargs["max_pixels"] = max_pixels
+    return kwargs
+
+
+def load_qwen25(
+    model_name: str,
+    local_files_only: bool = False,
+    min_pixels: int = 0,
+    max_pixels: int = 0,
+):
     import torch
     from transformers import AutoProcessor, Qwen2_5_VLForConditionalGeneration
 
@@ -72,11 +103,19 @@ def load_qwen25(model_name: str, local_files_only: bool = False):
         device_map="auto",
         local_files_only=local_files_only,
     )
-    processor = AutoProcessor.from_pretrained(model_name, local_files_only=local_files_only)
+    processor = AutoProcessor.from_pretrained(
+        model_name,
+        **processor_kwargs(local_files_only, min_pixels, max_pixels),
+    )
     return model, processor
 
 
-def load_qwen3(model_name: str, local_files_only: bool = False):
+def load_qwen3(
+    model_name: str,
+    local_files_only: bool = False,
+    min_pixels: int = 0,
+    max_pixels: int = 0,
+):
     import torch
     from transformers import AutoModelForImageTextToText, AutoProcessor
 
@@ -96,15 +135,40 @@ def load_qwen3(model_name: str, local_files_only: bool = False):
             torch_dtype=torch.bfloat16,
             **kwargs,
         )
-    processor = AutoProcessor.from_pretrained(model_name, local_files_only=local_files_only)
+    processor = AutoProcessor.from_pretrained(
+        model_name,
+        **processor_kwargs(local_files_only, min_pixels, max_pixels),
+    )
     return model, processor
 
 
-def load_model(model_name: str, backend: str, local_files_only: bool = False):
+def load_model(
+    model_name: str,
+    backend: str,
+    local_files_only: bool = False,
+    min_pixels: int = 0,
+    max_pixels: int = 0,
+):
     resolved = resolve_backend(model_name, backend)
     if resolved == "qwen3":
-        return (*load_qwen3(model_name, local_files_only=local_files_only), resolved)
-    return (*load_qwen25(model_name, local_files_only=local_files_only), resolved)
+        return (
+            *load_qwen3(
+                model_name,
+                local_files_only=local_files_only,
+                min_pixels=min_pixels,
+                max_pixels=max_pixels,
+            ),
+            resolved,
+        )
+    return (
+        *load_qwen25(
+            model_name,
+            local_files_only=local_files_only,
+            min_pixels=min_pixels,
+            max_pixels=max_pixels,
+        ),
+        resolved,
+    )
 
 
 def qwen_summary(model, processor, image_path: Path, model_name: str, max_new_tokens: int) -> str:
@@ -141,6 +205,7 @@ def qwen_summary(model, processor, image_path: Path, model_name: str, max_new_to
 
 def main() -> None:
     args = parse_args()
+    model_label = args.model_label or args.model
     records = read_jsonl(args.records)
     if args.limit:
         records = records[: args.limit]
@@ -162,6 +227,8 @@ def main() -> None:
             args.model,
             backend=args.backend,
             local_files_only=args.local_files_only,
+            min_pixels=args.min_pixels,
+            max_pixels=args.max_pixels,
         )
 
     mode = "a" if args.resume else "w"
@@ -169,16 +236,16 @@ def main() -> None:
     with out_path.open(mode, encoding="utf-8") as handle:
         for record in records:
             if args.mock:
-                output = mock_summary(record, args.model)
+                output = mock_summary(record, model_label)
             else:
                 image_path = image_root / record["image_path"]
-                raw_text = qwen_summary(model, processor, image_path, args.model, args.max_new_tokens)
+                raw_text = qwen_summary(model, processor, image_path, model_label, args.max_new_tokens)
                 output = {
                     **record,
                     "visual_summary": raw_text,
                     "detected_elements": record.get("question_types", []),
                     "answer_relevant_text": raw_text,
-                    "model_name": args.model,
+                    "model_name": model_label,
                     "model_backend": backend,
                 }
             import json
