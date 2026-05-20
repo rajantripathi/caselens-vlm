@@ -21,7 +21,8 @@ apptainer exec --nv --bind "$SCRATCH:$SCRATCH" \
   --records data/docvqa_sample/page_records.jsonl \
   --image-root data/docvqa_sample \
   --out data/docvqa_sample/vlm_qwen100.jsonl \
-  --model Qwen/Qwen2.5-VL-3B-Instruct \
+  --model "$SCRATCH/hf_cache/hub/models--Qwen--Qwen2.5-VL-3B-Instruct/snapshots/66285546d2b821cf421d4f5eb2576359d3770cd3" \
   --limit 100 \
   --max-new-tokens 160 \
-  --resume
+  --resume \
+  --local-files-only

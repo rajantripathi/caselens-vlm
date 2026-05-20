@@ -25,6 +25,7 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--image-root", required=True, help="Directory that image paths are relative to")
     parser.add_argument("--out", required=True)
     parser.add_argument("--model", default="Qwen/Qwen2.5-VL-3B-Instruct")
+    parser.add_argument("--local-files-only", action="store_true", help="Do not call Hugging Face Hub APIs")
     parser.add_argument("--limit", type=int, default=0)
     parser.add_argument("--mock", action="store_true", help="Generate deterministic summaries without loading a VLM")
     parser.add_argument("--max-new-tokens", type=int, default=256)
@@ -46,7 +47,7 @@ def mock_summary(record: dict[str, Any], model_name: str) -> dict[str, Any]:
     }
 
 
-def load_qwen(model_name: str):
+def load_qwen(model_name: str, local_files_only: bool = False):
     import torch
     from transformers import AutoProcessor, Qwen2_5_VLForConditionalGeneration
 
@@ -54,8 +55,9 @@ def load_qwen(model_name: str):
         model_name,
         torch_dtype=torch.bfloat16,
         device_map="auto",
+        local_files_only=local_files_only,
     )
-    processor = AutoProcessor.from_pretrained(model_name)
+    processor = AutoProcessor.from_pretrained(model_name, local_files_only=local_files_only)
     return model, processor
 
 
@@ -109,7 +111,7 @@ def main() -> None:
 
     model = processor = None
     if not args.mock:
-        model, processor = load_qwen(args.model)
+        model, processor = load_qwen(args.model, local_files_only=args.local_files_only)
 
     mode = "a" if args.resume else "w"
     written = 0

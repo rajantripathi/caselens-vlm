@@ -92,6 +92,8 @@ python scripts/generate_vlm_summaries.py \
   --resume
 ```
 
+On shared clusters, use `--local-files-only` with a cached model snapshot to avoid Hugging Face rate limits.
+
 Build a strict VLM-summary index:
 
 ```bash
