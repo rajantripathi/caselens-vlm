@@ -8,7 +8,7 @@ Most RAG demos assume clean text. Real enterprise documents are messier: scanned
 
 What I implemented:
 
-- Qwen2.5-VL and Qwen3-VL page understanding over real DocVQA page images
+- Qwen3-VL page understanding over real DocVQA page images
 - Page-level evidence summaries with cited retrieval
 - BM25 retrieval over VLM-generated visual summaries
 - Recall@k evaluation against DocVQA question/page labels
@@ -18,8 +18,6 @@ What I implemented:
 Measured result:
 
 - Metadata-only Recall@5: 0.035
-- Qwen2.5-VL summary Recall@5: 0.534
-- Qwen2.5-VL hybrid Recall@5: 0.587
 - Qwen3-VL summary Recall@5: 0.658
 - Qwen3-VL hybrid Recall@5: 0.708
 
@@ -42,8 +40,6 @@ The pipeline takes real DocVQA page images, generates page-level evidence with o
 The part I found most useful was comparing retrieval modes:
 
 - Metadata-only Recall@5: 0.035
-- Qwen2.5-VL summary Recall@5: 0.534
-- Qwen2.5-VL hybrid Recall@5: 0.587
 - Qwen3-VL summary Recall@5: 0.658
 - Qwen3-VL hybrid Recall@5: 0.708
 - Demo upper-bound Recall@5: 0.988

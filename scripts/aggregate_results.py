@@ -16,7 +16,7 @@ def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser()
     parser.add_argument("--eval-dir", required=True)
     parser.add_argument("--out", required=True)
-    parser.add_argument("--summary-file", default="vlm_qwen100.jsonl")
+    parser.add_argument("--summary-file", default="vlm_qwen3_8b_100.jsonl")
     return parser.parse_args()
 
 
@@ -48,10 +48,10 @@ def main() -> None:
             load_metric(eval_dir, "eval_metadata100_k5.json", "recall_at_5"),
         ],
         [
-            "Qwen2.5-VL summaries",
+            "Qwen3-VL summaries",
             "VLM page descriptions and extracted visible text",
-            load_metric(eval_dir, "eval_qwen100_k1.json", "recall_at_1"),
-            load_metric(eval_dir, "eval_qwen100_k5.json", "recall_at_5"),
+            load_metric(eval_dir, "eval_qwen3_8b_100_k1.json", "recall_at_1"),
+            load_metric(eval_dir, "eval_qwen3_8b_100.json", "recall_at_5"),
         ],
         [
             "Demo upper-bound",

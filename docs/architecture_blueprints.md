@@ -19,7 +19,6 @@ flowchart LR
     subgraph processing["DOCUMENT PROCESSING"]
         export["Page export"]
         metadata["Metadata and QA records"]
-        qwen25["Qwen2.5-VL summaries"]
         qwen3["Qwen3-VL summaries"]
     end
 
@@ -37,10 +36,8 @@ flowchart LR
     end
 
     docs --> export --> metadata
-    metadata --> qwen25
     metadata --> qwen3
     upload --> ui
-    qwen25 --> bm25
     qwen3 --> bm25
     qwen3 --> minilm
     bm25 --> hybrid
@@ -56,7 +53,7 @@ flowchart LR
     classDef retrieval fill:#FEF3C7,stroke:#D97706,color:#0F172A
     classDef gov fill:#F3E8FF,stroke:#7C3AED,color:#0F172A
     class docs,upload,questions,user input
-    class export,metadata,qwen25,qwen3,ui process
+    class export,metadata,qwen3,ui process
     class bm25,minilm,hybrid,cited retrieval
     class recall,audit,limits gov
 ```

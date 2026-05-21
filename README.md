@@ -11,7 +11,7 @@ I built this around a practical question: when documents are scanned pages, form
 | Capability | What is implemented |
 | --- | --- |
 | Real data | DocVQA scanned document pages from the UCSF Industry Documents Library |
-| VLM evidence | Qwen2.5-VL and Qwen3-VL page-level visual summaries |
+| VLM evidence | Qwen3-VL page-level visual summaries |
 | Retrieval | BM25 baseline plus MiniLM dense hybrid retrieval |
 | Evaluation | Same 100-page / 339-question subset across all retrieval modes |
 | Governance | Local citation audit, grounding checks, reviewer-oriented UI, AWS guardrail mapping |
@@ -37,7 +37,6 @@ The main dataset is **DocVQA**, a document visual question answering benchmark b
 Useful references:
 
 - DocVQA dataset: https://site.docvqa.org/datasets/docvqa
-- Qwen2.5-VL model family: https://huggingface.co/Qwen/Qwen2.5-VL-7B-Instruct
 - Qwen3-VL model family: https://huggingface.co/Qwen/Qwen3-VL-8B-Instruct
 
 ## Architecture
@@ -98,7 +97,7 @@ python scripts/evaluate_retrieval.py \
   --out data/docvqa_sample/eval_demo.json
 ```
 
-Generate VLM page summaries:
+Generate Qwen3-VL page summaries:
 
 ```bash
 # Install a GPU-compatible PyTorch build first, then:
@@ -107,22 +106,10 @@ pip install -r requirements-vlm.txt
 python scripts/generate_vlm_summaries.py \
   --records data/docvqa_sample/page_records.jsonl \
   --image-root data/docvqa_sample \
-  --out data/docvqa_sample/vlm_page_summaries.jsonl \
-  --model Qwen/Qwen2.5-VL-3B-Instruct \
-  --backend auto \
-  --limit 100 \
-  --resume
-```
-
-To compare a stronger challenger model on the same pages, use:
-
-```bash
-python scripts/generate_vlm_summaries.py \
-  --records data/docvqa_sample/page_records.jsonl \
-  --image-root data/docvqa_sample \
   --out data/docvqa_sample/vlm_qwen3_8b_100.jsonl \
   --model Qwen/Qwen3-VL-8B-Instruct \
-  --backend qwen3 \
+  --max-new-tokens 180 \
+  --max-pixels 501760 \
   --limit 100 \
   --resume
 ```
@@ -133,33 +120,39 @@ Build a strict VLM-summary index:
 
 ```bash
 python scripts/build_index.py \
-  --records data/docvqa_sample/vlm_page_summaries.jsonl \
-  --out data/docvqa_sample/index_vlm.json \
+  --records data/docvqa_sample/vlm_qwen3_8b_100.jsonl \
+  --out data/docvqa_sample/index_qwen3_8b_100.json \
   --text-field vlm_summary
 
 python scripts/ask.py \
-  --index data/docvqa_sample/index_vlm.json \
-  --records data/docvqa_sample/vlm_page_summaries.jsonl \
-  --question "Which page contains the coffee break time?" \
+  --index data/docvqa_sample/index_qwen3_8b_100.json \
+  --records data/docvqa_sample/vlm_qwen3_8b_100.jsonl \
+  --question "What is the PD?" \
   --k 3
 ```
 
+To run directly from the Slurm launcher:
+
+```bash
+sbatch slurm/run_qwen3_100.sbatch
+```
+
+The public Streamlit demo does not require generated artifacts, but the full local artifact mode expects the Qwen3 records and index above.
+
 ## Current Verified Results
 
-The project now has real Qwen2.5-VL and Qwen3-VL results over the same DocVQA page subset. Full details are in `docs/results.md`.
+The project now has real Qwen3-VL results over a DocVQA page subset. Full details are in `docs/results.md`.
 
 | Sample | Pages | Questions | Mode | Recall@1 | Recall@5 |
 | --- | ---: | ---: | --- | ---: | ---: |
 | Qwen3-VL real run | 100 | 339 | hybrid BM25 + MiniLM embeddings | not measured | 0.708 |
 | Qwen3-VL real run | 100 | 339 | strict VLM-summary retrieval | 0.445 | 0.658 |
-| Qwen2.5-VL real run | 100 | 339 | hybrid BM25 + MiniLM embeddings | not measured | 0.587 |
-| Qwen2.5-VL real run | 100 | 339 | strict VLM-summary retrieval | 0.363 | 0.534 |
 | Same subset | 100 | 339 | metadata-only retrieval | 0.003 | 0.035 |
 | Same subset | 100 | 339 | demo gold-question retrieval | 0.923 | 0.988 |
 | Smoke | 29 | 100 | demo gold-question retrieval | not measured | 1.000 |
 | Main | 138 | 500 | demo gold-question retrieval | not measured | 0.978 |
 
-The Qwen2.5-VL-3B 100-page inference run completed in 24m47s. The Qwen3-VL-8B challenger run completed in 30m42s using a capped visual token budget. Both used an NVIDIA GH200 GPU node through the public Isambard container `/lus/lfs1aip2/projects/public/u6ei/torch_cuda126.sif`. Hybrid rows add a lightweight dense retrieval pass using `sentence-transformers/all-MiniLM-L6-v2` over the same VLM summaries.
+The Qwen3-VL-8B run completed in 30m42s using a capped visual token budget on an NVIDIA GH200 GPU node through the public Isambard container `/lus/lfs1aip2/projects/public/u6ei/torch_cuda126.sif`. The hybrid row adds a lightweight dense retrieval pass using `sentence-transformers/all-MiniLM-L6-v2` over the same VLM summaries.
 
 On Isambard, verify the PyTorch build before VLM inference:
 
@@ -176,7 +169,7 @@ EOF
 
 ```bash
 python scripts/prepare_docvqa.py --dataset PATH --out DIR --split validation --limit 500
-python scripts/generate_vlm_summaries.py --records page_records.jsonl --image-root DIR --out vlm_page_summaries.jsonl
+python scripts/generate_vlm_summaries.py --records page_records.jsonl --image-root DIR --out vlm_qwen3_8b_100.jsonl
 python scripts/build_index.py --records RECORDS --out index.json --text-field metadata|vlm_summary
 python scripts/ask.py --index index.json --records RECORDS --question "..." --k 5
 python scripts/evaluate_retrieval.py --index index.json --records RECORDS --qas qa_records.jsonl --k 5
@@ -208,7 +201,7 @@ This repo intentionally excludes:
 - Slurm logs
 
 See `docs/aws_architecture.md` for the AWS implementation mapping and `docs/cv_project_summary.md` for a concise portfolio summary.
-See `docs/results.md` for real Qwen2.5-VL and Qwen3-VL retrieval metrics.
+See `docs/results.md` for real Qwen3-VL retrieval metrics.
 See `docs/linkedin_post.md` and `docs/interview_talking_points.md` for company-facing materials.
 See `docs/interview_prep.md` for interview talking points and tradeoffs.
 See `docs/enterprise_architecture.md` for the guardrails, audit, and monitoring design.
@@ -217,6 +210,6 @@ See `docs/reference_architecture.md` for a publishable enterprise AWS reference 
 ## Limitations
 
 - The demo baseline uses DocVQA question text and is only a pipeline sanity check.
-- The strict VLM path depends on downloading and running a VLM such as Qwen2.5-VL-3B.
+- The strict VLM path depends on downloading and running a VLM such as Qwen3-VL-8B.
 - PyTorch/CUDA installation is cluster-specific; use a build compatible with the active NVIDIA driver.
 - Official DocVQA OCR transcriptions are not bundled in the Hugging Face mirror used here.

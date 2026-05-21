@@ -23,7 +23,6 @@ apptainer exec --nv --bind "$SCRATCH:$SCRATCH" \
   --out data/docvqa_sample/vlm_qwen3_8b_100.jsonl \
   --model Qwen/Qwen3-VL-8B-Instruct \
   --model-label Qwen/Qwen3-VL-8B-Instruct \
-  --backend qwen3 \
   --limit 100 \
   --max-new-tokens 180 \
   --max-pixels 501760 \

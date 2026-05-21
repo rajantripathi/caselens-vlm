@@ -19,20 +19,6 @@ RESULTS = [
         "Recall@5": "0.035",
     },
     {
-        "Mode": "Qwen2.5-VL summaries",
-        "Pages": 100,
-        "Questions": 339,
-        "Recall@1": "0.363",
-        "Recall@5": "0.534",
-    },
-    {
-        "Mode": "Qwen2.5-VL hybrid",
-        "Pages": 100,
-        "Questions": 339,
-        "Recall@1": "not measured",
-        "Recall@5": "0.587",
-    },
-    {
         "Mode": "Qwen3-VL summaries",
         "Pages": 100,
         "Questions": 339,

@@ -2,7 +2,7 @@
 
 ## Thirty-Second Version
 
-CaseLens-VLM is a multimodal document RAG project over real scanned DocVQA pages. I used Qwen2.5-VL and Qwen3-VL to convert page images into textual evidence, indexed that evidence with BM25 and dense hybrid retrieval, and evaluated retrieval quality with real question-to-page labels. The best configuration improved Recall@5 from `0.035` with metadata-only retrieval to `0.708` with Qwen3-VL plus hybrid retrieval.
+CaseLens-VLM is a multimodal document RAG project over real scanned DocVQA pages. I used Qwen3-VL to convert page images into textual evidence, indexed that evidence with BM25 and dense hybrid retrieval, and evaluated retrieval quality with real question-to-page labels. The best configuration improved Recall@5 from `0.035` with metadata-only retrieval to `0.708` with Qwen3-VL plus hybrid retrieval.
 
 ## Two-Minute Architecture Walkthrough
 
@@ -18,8 +18,6 @@ CaseLens-VLM is a multimodal document RAG project over real scanned DocVQA pages
 | Mode | Recall@5 |
 | --- | ---: |
 | Metadata-only | 0.035 |
-| Qwen2.5-VL summaries | 0.534 |
-| Qwen2.5-VL hybrid | 0.587 |
 | Qwen3-VL summaries | 0.658 |
 | Qwen3-VL hybrid | 0.708 |
 
