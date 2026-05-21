@@ -17,6 +17,10 @@ I built this around a practical question: when documents are scanned pages, form
 | Governance | Local citation audit, grounding checks, reviewer-oriented UI, AWS guardrail mapping |
 | Infrastructure | Isambard GH200 GPU batch workflow with reproducible Slurm scripts |
 
+## Model Choice
+
+The project is standardized on **Qwen3-VL-8B-Instruct** as the primary open VLM. Earlier secondary-model notes were removed so the portfolio story stays focused: one strong VLM, compared against metadata-only and hybrid retrieval baselines. That is easier to defend in interviews than maintaining multiple partially documented model paths.
+
 ## Problem
 
 Most enterprise RAG demos assume clean extracted text. Real document estates are messier: scanned pages, forms, charts, tables, signatures, handwriting, and visual layout cues. CaseLens-VLM shows how to convert those pages into retrievable evidence while preserving page-level provenance.
@@ -204,6 +208,7 @@ See `docs/aws_architecture.md` for the AWS implementation mapping and `docs/cv_p
 See `docs/results.md` for real Qwen3-VL retrieval metrics.
 See `docs/linkedin_post.md` and `docs/interview_talking_points.md` for company-facing materials.
 See `docs/interview_prep.md` for interview talking points and tradeoffs.
+See `docs/model_decision.md` for why the repo uses a single primary VLM.
 See `docs/enterprise_architecture.md` for the guardrails, audit, and monitoring design.
 See `docs/reference_architecture.md` for a publishable enterprise AWS reference architecture.
 
