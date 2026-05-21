@@ -293,29 +293,64 @@ def local_artifacts() -> None:
 
 def architecture() -> None:
     st.subheader("Enterprise Reference Architecture")
-    st.markdown(
-        """
+    open_source, dialogxr, aws = st.tabs(["Open-source", "DialogXR-style", "AWS managed"])
+    with open_source:
+        st.markdown(
+            """
 ```mermaid
 flowchart LR
-    A["PDFs and scanned pages"] --> B["Page extraction"]
-    B --> C["OCR and layout"]
-    B --> D["VLM page understanding"]
-    C --> E["Evidence records"]
-    D --> E
-    E --> F["BM25 and vector indexes"]
-    F --> G["Retriever and reranker"]
-    G --> H["Cited answer generation"]
-    H --> I["Grounding guardrails"]
-    I --> J["Reviewer UI and audit log"]
+    A["Scanned pages and uploads"] --> B["Page evidence records"]
+    B --> C["Qwen VLM summaries"]
+    C --> D["BM25 and MiniLM indexes"]
+    D --> E["Cited retrieval"]
+    E --> F["Recall evaluation"]
+    E --> G["Citation audit"]
 ```
 """
-    )
+        )
+        st.write("This is the project implemented in the repo: VLM evidence generation, hybrid retrieval, cited answers, and evaluation.")
+    with dialogxr:
+        st.markdown(
+            """
+```mermaid
+flowchart LR
+    A["Practitioner"] --> B["Secure web app"]
+    B --> C["Identity and policy"]
+    B --> D["RAG orchestrator"]
+    D --> E["PII redaction"]
+    E --> F["OCR and parser"]
+    F --> G["VLM page understanding"]
+    G --> H["Hybrid retriever"]
+    H --> I["Guardrail service"]
+    I --> J["Reviewer UI"]
+    I --> K["Immutable audit"]
+```
+"""
+        )
+        st.write("This is the DialogXR-style version: secure access, policy, PII handling, evidence retrieval, guardrails, reviewer workflow, and audit.")
+    with aws:
+        st.markdown(
+            """
+```mermaid
+flowchart LR
+    A["S3 documents"] --> B["Step Functions"]
+    B --> C["Textract or Bedrock Data Automation"]
+    B --> D["Bedrock multimodal model"]
+    C --> E["Evidence records"]
+    D --> E
+    E --> F["Bedrock Knowledge Bases or OpenSearch"]
+    F --> G["Bedrock reranker"]
+    G --> H["Bedrock Guardrails"]
+    H --> I["Reviewer app"]
+    H --> J["CloudWatch and S3 audit"]
+```
+"""
+        )
+        st.write("This is the AWS managed version aligned to Bedrock, Knowledge Bases, Guardrails, CloudWatch, and S3 audit.")
+    st.divider()
     st.markdown(
         """
-**AWS mapping:** S3 for document storage, Textract or Bedrock Data Automation for OCR/layout,
-Bedrock or SageMaker for multimodal model inference, OpenSearch Serverless or Aurora pgvector
-for retrieval, Step Functions or Batch for orchestration, Bedrock Guardrails for grounding checks,
-and CloudWatch/S3 for monitoring and audit archives.
+Full blueprint diagrams are in `docs/architecture_blueprints.md`.
 """
     )
 

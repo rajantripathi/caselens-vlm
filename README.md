@@ -56,6 +56,7 @@ flowchart LR
 ```
 
 The publishable enterprise version is documented in [`docs/reference_architecture.md`](docs/reference_architecture.md).
+Additional open-source, DialogXR-style, and AWS topology diagrams are in [`docs/architecture_blueprints.md`](docs/architecture_blueprints.md).
 
 ## Isambard Quickstart
 
@@ -209,6 +210,7 @@ This repo intentionally excludes:
 See `docs/aws_architecture.md` for the AWS implementation mapping and `docs/cv_project_summary.md` for a concise portfolio summary.
 See `docs/results.md` for real Qwen2.5-VL and Qwen3-VL retrieval metrics.
 See `docs/linkedin_post.md` and `docs/interview_talking_points.md` for company-facing materials.
+See `docs/interview_prep.md` for interview talking points and tradeoffs.
 See `docs/enterprise_architecture.md` for the guardrails, audit, and monitoring design.
 See `docs/reference_architecture.md` for a publishable enterprise AWS reference architecture.
 
