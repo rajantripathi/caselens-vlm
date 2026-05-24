@@ -27,7 +27,7 @@ These results were produced on Isambard using real DocVQA page images.
 
 The strict Qwen3-VL summary index substantially improves retrieval over metadata-only indexing. Recall@5 increased from 0.035 to 0.658 on 339 real DocVQA questions, confirming the core project claim: visual page understanding provides useful retrieval evidence for scanned document question answering.
 
-A simple hybrid retriever improved the Qwen3-VL result again to 0.708 by combining BM25 scores with dense MiniLM embeddings over the same generated evidence. This is still a small portfolio-scale experiment, but it is closer to how an enterprise search stack would combine lexical and semantic retrieval.
+A simple hybrid retriever improved the Qwen3-VL result again to 0.708 by combining BM25 scores with dense MiniLM embeddings over the same generated evidence. This is still a limited-scale experiment, but it is closer to how an enterprise search stack would combine lexical and semantic retrieval.
 
 The demo upper-bound is intentionally not a valid production setting because it indexes gold question text. It is retained only as a pipeline sanity check.
 
@@ -43,7 +43,7 @@ Qwen3-VL generated useful page-level evidence, including visible text and layout
 
 ## Current Limitations
 
-- The 100-page result is a credible portfolio-scale benchmark, not a full DocVQA benchmark.
+- The 100-page result is a credible limited-scale benchmark, not a full DocVQA benchmark.
 - Some VLM outputs are markdown-wrapped or truncated JSON-like text rather than strict parsed JSON.
 - Hybrid retrieval was tested with MiniLM embeddings; larger embedding models and reranking are natural next steps.
 - The model was run without a Hugging Face token, so larger runs may benefit from authenticated downloads.

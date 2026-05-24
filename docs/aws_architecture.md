@@ -1,6 +1,6 @@
 # AWS Architecture Mapping
 
-CaseLens-VLM runs on Isambard for this portfolio version, but the same pattern maps cleanly to AWS managed services.
+CaseLens-VLM runs on Isambard for the benchmark implementation, but the same pattern maps cleanly to AWS managed services.
 
 | CaseLens component | AWS equivalent |
 | --- | --- |
@@ -22,6 +22,6 @@ CaseLens-VLM runs on Isambard for this portfolio version, but the same pattern m
 5. Answer user questions with retrieved page citations.
 6. Log retrieval quality, cited pages, and human feedback for monitoring.
 
-## Certification Story
+## Architecture Relevance
 
 This project demonstrates the architecture behind an enterprise GenAI document intelligence workload: multimodal ingestion, foundation model inference, retrieval-augmented generation, orchestration, and monitoring.

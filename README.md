@@ -2,9 +2,9 @@
 
 **Enterprise multimodal document intelligence with VLMs, hybrid retrieval, citations, and audit controls.**
 
-CaseLens-VLM is a portfolio-grade multimodal RAG pipeline over real scanned DocVQA pages. It uses open vision-language models to turn page images into searchable evidence, retrieves cited pages for questions, evaluates retrieval quality, and maps the same pattern to an enterprise AWS reference architecture.
+CaseLens-VLM is a benchmark-oriented multimodal RAG pipeline over real scanned DocVQA pages. It uses open vision-language models to turn page images into searchable evidence, retrieves cited pages for questions, evaluates retrieval quality, and maps the same pattern to an enterprise AWS reference architecture.
 
-I built this around a practical question: when documents are scanned pages, forms, tables, handwriting, and layout-heavy reports, how much does visual page understanding improve retrieval compared with metadata alone?
+The project evaluates a practical question: when documents are scanned pages, forms, tables, handwriting, and layout-heavy reports, how much does visual page understanding improve retrieval compared with metadata alone?
 
 ## Highlights
 
@@ -19,7 +19,7 @@ I built this around a practical question: when documents are scanned pages, form
 
 ## Model Choice
 
-The project is standardized on **Qwen3-VL-8B-Instruct** as the primary open VLM. Earlier secondary-model notes were removed so the portfolio story stays focused: one strong VLM, compared against metadata-only and hybrid retrieval baselines. That is easier to defend in interviews than maintaining multiple partially documented model paths.
+The project is standardized on **Qwen3-VL-8B-Instruct** as the primary open VLM. This keeps the benchmark controlled: one documented VLM evidence layer, compared against metadata-only retrieval and hybrid lexical+dense retrieval baselines.
 
 ## Problem
 
@@ -204,10 +204,10 @@ This repo intentionally excludes:
 - Model weights and Hugging Face caches
 - Slurm logs
 
-See `docs/aws_architecture.md` for the AWS implementation mapping and `docs/cv_project_summary.md` for a concise portfolio summary.
+See `docs/aws_architecture.md` for the AWS implementation mapping and `docs/cv_project_summary.md` for a concise project summary.
 See `docs/results.md` for real Qwen3-VL retrieval metrics.
-See `docs/linkedin_post.md` and `docs/interview_talking_points.md` for company-facing materials.
-See `docs/interview_prep.md` for interview talking points and tradeoffs.
+See `docs/linkedin_post.md` and `docs/project_brief.md` for public-facing summaries.
+See `docs/technical_tradeoffs.md` for design tradeoffs and implementation notes.
 See `docs/model_decision.md` for why the repo uses a single primary VLM.
 See `docs/enterprise_architecture.md` for the guardrails, audit, and monitoring design.
 See `docs/reference_architecture.md` for a publishable enterprise AWS reference architecture.

@@ -12,7 +12,7 @@ Built **CaseLens-VLM**, a multimodal document RAG system over real DocVQA scanne
 
 **ML / Research Engineer:** Evaluated VLM-assisted retrieval on a 339-question DocVQA subset using Qwen3-VL, metadata-only retrieval, hybrid dense retrieval, and demo upper-bound controls; documented limitations and reproducible Isambard GH200 inference workflow.
 
-## Interview Explanation
+## Project Explanation
 
 CaseLens-VLM takes real document images from DocVQA, exports page-level records, generates visual summaries using a vision-language model, indexes those summaries, and answers questions with page citations. The project compares retrieval modes so the difference between metadata-only, demo/gold-question retrieval, and VLM-summary retrieval is explicit.
 

@@ -1,6 +1,6 @@
 # Architecture Blueprints
 
-These diagrams are designed for recruiters, interviewers, and LinkedIn readers. They show the same idea at three levels: the implemented open-source project, a DialogXR-style enterprise deployment, and an AWS managed-service deployment.
+These diagrams show the CaseLens-VLM architecture at three levels: the implemented open-source project, a DialogXR-style enterprise deployment, and an AWS managed-service deployment.
 
 ## 1. Open-Source CaseLens Topology
 
@@ -58,7 +58,7 @@ flowchart LR
     class recall,audit,limits gov
 ```
 
-**How to explain it:** CaseLens turns scanned pages into evidence records, uses VLMs to describe visual content, retrieves cited pages, and evaluates whether retrieval improves over metadata-only search.
+**Summary:** CaseLens turns scanned pages into evidence records, uses VLMs to describe visual content, retrieves cited pages, and evaluates whether retrieval improves over metadata-only search.
 
 ## 2. DialogXR-Style Enterprise Topology
 
@@ -135,11 +135,11 @@ flowchart LR
     class metrics,traces,logs obs
 ```
 
-**How to explain it:** This is the version you would propose for DialogXR-like work: secure practitioner access, policy checks, PII handling, VLM-assisted evidence extraction, hybrid retrieval, guardrails, immutable audit, and monitoring.
+**Summary:** This enterprise topology adds secure practitioner access, policy checks, PII handling, VLM-assisted evidence extraction, hybrid retrieval, guardrails, immutable audit, and monitoring.
 
 ## 3. AWS Managed-Service Topology
 
-This version maps the pipeline to AWS services that are relevant to GenAI and the AWS AI Practitioner / GenAI certification story.
+This version maps the pipeline to managed AWS services for a production document intelligence workload.
 
 ```mermaid
 flowchart LR
@@ -214,9 +214,9 @@ flowchart LR
     class cloudwatch,cloudtrail,eval ops
 ```
 
-**How to explain it:** This is the managed version: S3 for documents, Textract or Bedrock Data Automation for extraction, Bedrock multimodal models for visual evidence, Bedrock Knowledge Bases and OpenSearch for retrieval, Bedrock Guardrails for grounding and policy checks, and CloudWatch/CloudTrail/S3 for observability and audit.
+**Summary:** This managed version uses S3 for documents, Textract or Bedrock Data Automation for extraction, Bedrock multimodal models for visual evidence, Bedrock Knowledge Bases and OpenSearch for retrieval, Bedrock Guardrails for grounding and policy checks, and CloudWatch/CloudTrail/S3 for observability and audit.
 
-## Design Decisions to Defend
+## Design Decisions
 
 | Decision | Why it matters |
 | --- | --- |

@@ -1,6 +1,6 @@
-# Interview Talking Points
+# Project Brief
 
-## One-Minute Summary
+## Summary
 
 CaseLens-VLM is a multimodal document RAG system for real scanned documents. It uses Qwen3-VL to convert page images into textual evidence, indexes those summaries, retrieves cited pages for questions, and evaluates Recall@k on DocVQA.
 
@@ -12,7 +12,7 @@ CaseLens-VLM is a multimodal document RAG system for real scanned documents. It 
 - **Evaluation:** DocVQA question-to-page labels are used to measure Recall@1 and Recall@5.
 - **Infrastructure:** GPU inference runs on Isambard GH200 using Apptainer and Slurm.
 
-## Enterprise Framing
+## Enterprise Use Case
 
 This maps to document intelligence workloads in regulated or operational settings: invoices, forms, scanned case files, reports, compliance packs, and mixed text/image PDFs.
 
@@ -31,6 +31,6 @@ This maps to document intelligence workloads in regulated or operational setting
 - VLM summaries improve retrieval but cost more than metadata-only indexing.
 - The demo upper-bound indexes gold question text and is only a sanity check, not a valid production method.
 
-## Result to Quote
+## Result Summary
 
 On a 339-question real DocVQA subset, VLM-summary retrieval improved Recall@5 from 0.035 metadata-only to 0.658 with Qwen3-VL. Adding MiniLM dense embeddings increased the Qwen3-VL result to 0.708.
