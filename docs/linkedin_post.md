@@ -14,9 +14,9 @@ The hybrid VLM-assisted pipeline produced roughly a 20-fold improvement over met
 
 The main takeaway was that retrieval design carried most of the practical gain. Visual page summaries gave the retriever much stronger evidence than metadata alone, and adding dense retrieval improved the result again without changing the VLM evidence layer.
 
-That pattern is consistent with my earlier bilingual RAG work: corpus preparation, evidence representation, and retrieval engineering often dominate production retrieval metrics more than swapping the base model in isolation.
+I also packaged the project as a no-GPU portfolio demo: Streamlit app, offline smoke test, citation audit, AWS reference architecture, and self-hosted Langfuse observability hooks. The public demo does not rerun Qwen3-VL; it lets people inspect the retrieval and governance workflow behind the measured benchmark.
 
-The repository includes the benchmark code, AWS reference architecture, and a reproducible Slurm workflow:
+The repository includes the benchmark code, no-GPU demo path, AWS reference architecture, and the original reproducible Slurm workflow:
 
 https://github.com/rajantripathi/caselens-vlm
 
@@ -39,6 +39,6 @@ Retrieval results on the current 100-page / 339-question subset:
 
 The project also includes hybrid retrieval, citation-level audit logs, grounding checks, an AWS architecture mapping, and a lightweight reviewer UI.
 
-This is not a production deployment, but it is a working implementation of a production-relevant pattern: convert visual document pages into evidence, retrieve with provenance, and evaluate retrieval quality directly.
+This is not a production deployment, and the public demo does not run live VLM inference. It is a working implementation of a production-relevant pattern: convert visual document pages into evidence, retrieve with provenance, trace model/retrieval calls, and evaluate retrieval quality directly.
 
 GitHub: https://github.com/rajantripathi/caselens-vlm

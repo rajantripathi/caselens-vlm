@@ -1,4 +1,4 @@
-.PHONY: prepare demo-index vlm-index eval-demo eval-vlm app
+.PHONY: prepare demo-index vlm-index eval-demo eval-vlm portfolio-smoke app
 
 DATASET ?= $(SCRATCH)/vlm_doc_project/docvqa_hf
 OUT ?= data/docvqa_sample
@@ -17,6 +17,9 @@ eval-demo:
 
 eval-vlm:
 	python scripts/evaluate_retrieval.py --index "$(OUT)/index_qwen3_8b_100.json" --records "$(OUT)/vlm_qwen3_8b_100.jsonl" --qas "$(OUT)/qa_records.jsonl" --k 5
+
+portfolio-smoke:
+	python scripts/portfolio_smoke.py
 
 app:
 	streamlit run app.py
