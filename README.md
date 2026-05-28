@@ -61,6 +61,20 @@ flowchart LR
 The publishable enterprise version is documented in [`docs/reference_architecture.md`](docs/reference_architecture.md).
 Additional open-source, DialogXR-style, and AWS topology diagrams are in [`docs/architecture_blueprints.md`](docs/architecture_blueprints.md).
 
+## Observability
+
+The RAG pipeline emits Langfuse traces for retrieval and generation calls, including latency, TTFT, token usage, retrieval scores, and query/page metadata. Langfuse can run self-hosted for air-gapped deployments, with no dependency on Langfuse Cloud.
+
+Configure tracing with:
+
+```bash
+LANGFUSE_PUBLIC_KEY=pk-lf-local
+LANGFUSE_SECRET_KEY=sk-lf-local
+LANGFUSE_HOST=http://localhost:3000
+```
+
+This mirrors enterprise observability requirements: tracing LLM calls and measuring model performance.
+
 ## Isambard Quickstart
 
 The project assumes DocVQA has already been downloaded to:

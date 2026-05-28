@@ -10,6 +10,7 @@ sys.path.insert(0, str(ROOT / "src"))
 
 from caselens.io import read_json, read_jsonl
 from caselens.retrieval import BM25Index
+from observability import flush_traces, trace_query
 
 
 def parse_args() -> argparse.Namespace:
@@ -25,11 +26,13 @@ def main() -> None:
     args = parse_args()
     index = BM25Index.from_dict(read_json(args.index))
     records = {record["page_id"]: record for record in read_jsonl(args.records)}
-    results = index.search(args.question, k=args.k)
+    with trace_query(args.question, metadata={"entrypoint": "scripts/ask.py", "top_k": args.k}):
+        results = index.search(args.question, k=args.k)
 
     print(f"Question: {args.question}\n")
     if not results:
         print("No matching pages found.")
+        flush_traces()
         return
 
     print("Top cited pages:")
@@ -43,6 +46,7 @@ def main() -> None:
         if record.get("qas"):
             nearest = record["qas"][0]
             print(f"   Example QA: {nearest['question']} -> {nearest['answers']}")
+    flush_traces()
 
 
 if __name__ == "__main__":

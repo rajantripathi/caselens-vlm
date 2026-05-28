@@ -8,6 +8,7 @@ import streamlit as st
 
 from src.caselens.io import read_json, read_jsonl
 from src.caselens.retrieval import BM25Index
+from src.observability import trace_query
 
 
 RESULTS = [
@@ -243,7 +244,8 @@ def demo_retrieval() -> None:
 
     index = build_index(records_for_demo)
     records = {record["page_id"]: record for record in records_for_demo}
-    results = index.search(query, k=k)
+    with trace_query(query, metadata={"entrypoint": "streamlit_demo", "top_k": k}):
+        results = index.search(query, k=k)
 
     st.markdown("**Retrieved evidence**")
     if not results:
@@ -270,7 +272,8 @@ def local_artifacts() -> None:
     records = {record["page_id"]: record for record in read_jsonl(records_path)}
     index = BM25Index.from_dict(read_json(index_path))
     if st.button("Retrieve local evidence", type="primary"):
-        results = index.search(question, k=k)
+        with trace_query(question, metadata={"entrypoint": "streamlit_local", "top_k": k}):
+            results = index.search(question, k=k)
         if not results:
             st.info("No cited pages found.")
         for rank, result in enumerate(results, start=1):

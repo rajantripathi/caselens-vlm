@@ -10,6 +10,7 @@ sys.path.insert(0, str(ROOT / "src"))
 
 from caselens.io import read_json, read_jsonl
 from caselens.retrieval import BM25Index
+from observability import flush_traces, trace_query
 
 
 def parse_args() -> argparse.Namespace:
@@ -33,7 +34,11 @@ def main() -> None:
 
     hits = 0
     for qa in qas:
-        retrieved = [result.page_id for result in index.search(qa["question"], k=args.k)]
+        with trace_query(
+            qa["question"],
+            metadata={"entrypoint": "scripts/evaluate_retrieval.py", "top_k": args.k},
+        ):
+            retrieved = [result.page_id for result in index.search(qa["question"], k=args.k)]
         hits += int(qa["page_id"] in retrieved)
 
     total = len(qas)
@@ -50,6 +55,7 @@ def main() -> None:
         from caselens.io import write_json
 
         write_json(args.out, metrics)
+    flush_traces()
 
 
 if __name__ == "__main__":

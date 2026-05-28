@@ -3,6 +3,7 @@ from __future__ import annotations
 
 import argparse
 import sys
+import time
 from pathlib import Path
 from typing import Any
 
@@ -10,6 +11,7 @@ ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "src"))
 
 from caselens.io import read_jsonl
+from observability import flush_traces, log_generation, trace_query, trace_step
 
 
 PROMPT = """You are building page-level evidence for document question answering.
@@ -105,6 +107,7 @@ def load_model(
     return model, processor
 
 
+@trace_step("generation.qwen_summary")
 def qwen_summary(model, processor, image_path: Path, model_name: str, max_new_tokens: int) -> str:
     from qwen_vl_utils import process_vision_info
 
@@ -126,15 +129,29 @@ def qwen_summary(model, processor, image_path: Path, model_name: str, max_new_to
         padding=True,
         return_tensors="pt",
     ).to(model.device)
+    input_tokens = int(inputs.input_ids.numel())
+    generation_start = time.perf_counter()
     generated_ids = model.generate(**inputs, max_new_tokens=max_new_tokens)
+    total_latency_ms = (time.perf_counter() - generation_start) * 1000
     generated_ids_trimmed = [
         out_ids[len(in_ids) :] for in_ids, out_ids in zip(inputs.input_ids, generated_ids)
     ]
-    return processor.batch_decode(
+    output_tokens = sum(len(out_ids) for out_ids in generated_ids_trimmed)
+    response = processor.batch_decode(
         generated_ids_trimmed,
         skip_special_tokens=True,
         clean_up_tokenization_spaces=False,
     )[0]
+    log_generation(
+        prompt=text,
+        response=response,
+        model=model_name,
+        input_tokens=input_tokens,
+        output_tokens=output_tokens,
+        first_token_latency_ms=total_latency_ms,
+        total_latency_ms=total_latency_ms,
+    )
+    return response
 
 
 def main() -> None:
@@ -167,19 +184,28 @@ def main() -> None:
     written = 0
     with out_path.open(mode, encoding="utf-8") as handle:
         for record in records:
-            if args.mock:
-                output = mock_summary(record, model_label)
-            else:
-                image_path = image_root / record["image_path"]
-                raw_text = qwen_summary(model, processor, image_path, model_label, args.max_new_tokens)
-                output = {
-                    **record,
-                    "visual_summary": raw_text,
-                    "detected_elements": record.get("question_types", []),
-                    "answer_relevant_text": raw_text,
-                    "model_name": model_label,
-                    "model_backend": "qwen3",
-                }
+            with trace_query(
+                record.get("page_id", ""),
+                metadata={
+                    "entrypoint": "scripts/generate_vlm_summaries.py",
+                    "pipeline_step": "vlm_summary_generation",
+                    "page_id": record.get("page_id", ""),
+                    "document_id": record.get("document_id", ""),
+                },
+            ):
+                if args.mock:
+                    output = mock_summary(record, model_label)
+                else:
+                    image_path = image_root / record["image_path"]
+                    raw_text = qwen_summary(model, processor, image_path, model_label, args.max_new_tokens)
+                    output = {
+                        **record,
+                        "visual_summary": raw_text,
+                        "detected_elements": record.get("question_types", []),
+                        "answer_relevant_text": raw_text,
+                        "model_name": model_label,
+                        "model_backend": "qwen3",
+                    }
             import json
 
             handle.write(json.dumps(output, ensure_ascii=True) + "\n")
@@ -191,6 +217,7 @@ def main() -> None:
         f"Wrote {written} VLM summary records -> {args.out}"
         + (f" ({len(completed)} already completed)" if completed else "")
     )
+    flush_traces()
 
 
 if __name__ == "__main__":
