@@ -1,5 +1,18 @@
 # CaseLens-VLM
 
+<!-- badges-start -->
+![License](https://img.shields.io/badge/license-Apache--2.0-blue.svg)
+![Python](https://img.shields.io/badge/python-3.10-blue.svg)
+![Last Commit](https://img.shields.io/github/last-commit/rajantripathi/caselens-vlm)
+![Stars](https://img.shields.io/github/stars/rajantripathi/caselens-vlm?style=social)
+![Issues](https://img.shields.io/github/issues/rajantripathi/caselens-vlm)
+![Code Style: ruff](https://img.shields.io/badge/code%20style-ruff-261230.svg)
+![vlm](https://img.shields.io/badge/vlm-informational.svg)
+![qwen3-vl](https://img.shields.io/badge/qwen3--vl-informational.svg)
+![docvqa](https://img.shields.io/badge/docvqa-informational.svg)
+<!-- badges-end -->
+
+
 **Enterprise multimodal document intelligence with VLMs, hybrid retrieval, citations, and audit controls.**
 
 CaseLens-VLM is a benchmark-oriented multimodal RAG pipeline over real scanned DocVQA pages. It uses open vision-language models to turn page images into searchable evidence, retrieves cited pages for questions, evaluates retrieval quality, and maps the same pattern to an enterprise AWS reference architecture.

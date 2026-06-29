@@ -1,0 +1,23 @@
+cff-version: 1.2.0
+message: "If you use this software, benchmark, or dataset in your research, please cite it as below."
+title: "CaseLens-VLM: Enterprise Multimodal Document Intelligence Benchmark"
+abstract: >
+  Multimodal RAG pipeline over real scanned DocVQA pages using Qwen3-VL.
+authors:
+  - family-names: "Tripathi"
+    given-names: "Rajan Prasad"
+    email: "rajan.tripathi@aut-edu.uz"
+    affiliation: "AUT AI2 Lab / Bikal Tech Transfer, Tashkent, Uzbekistan"
+type: software
+version: "0.1.0"
+date-released: "2026-06-29"
+license: "Apache-2.0"
+repository-code: "https://github.com/rajantripathi/caselens-vlm"
+keywords:
+  - "rag"
+  - "vision-language-models"
+  - "document-intelligence"
+  - "vlm"
+  - "docvqa"
+  - "hybrid-retrieval"
+  - "enterprise-ai"
