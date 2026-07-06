@@ -19,6 +19,28 @@ CaseLens-VLM is a benchmark-oriented multimodal RAG pipeline over real scanned D
 
 The project evaluates a practical question: when documents are scanned pages, forms, tables, handwriting, and layout-heavy reports, how much does visual page understanding improve retrieval compared with metadata alone?
 
+## Why This Matters
+
+On a 100-page / 339-question DocVQA subset, metadata-only retrieval reached **0.035 Recall@5**. Qwen3-VL page evidence reached **0.658 Recall@5**, and hybrid BM25 + MiniLM retrieval over the same VLM evidence reached **0.708 Recall@5**.
+
+The industry lesson is direct: for scanned enterprise documents, visual page understanding can turn otherwise weak metadata into retrievable, cited evidence. This is a document-AI analogue of evaluation-led RAG work: measure the evidence layer before optimizing generation.
+
+## Reuse Path for Builders
+
+- [Industry brief](docs/industry_brief.md): concise VLM/document-RAG framing for AI teams.
+- [Real results](docs/results.md): measured Qwen3-VL, metadata-only, and hybrid retrieval results.
+- [Reference architecture](docs/reference_architecture.md): publishable enterprise AWS architecture.
+- [Technical tradeoffs](docs/technical_tradeoffs.md): design decisions and limitations.
+- [LinkedIn draft](docs/linkedin_post.md): public-facing project narrative.
+
+No-GPU smoke check:
+
+```bash
+make portfolio-smoke
+```
+
+The smoke check validates the retrieval, citation, audit, and observability wiring. It does not rerun VLM inference.
+
 ## Highlights
 
 | Capability | What is implemented |
