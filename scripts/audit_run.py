@@ -13,6 +13,7 @@ sys.path.insert(0, str(ROOT / "src"))
 
 from caselens.io import read_json, read_jsonl
 from caselens.retrieval import BM25Index
+from observability import flush_traces, trace_query
 
 
 def parse_args() -> argparse.Namespace:
@@ -46,7 +47,8 @@ def main() -> None:
     args = parse_args()
     index = BM25Index.from_dict(read_json(args.index))
     records = {record["page_id"]: record for record in read_jsonl(args.records)}
-    results = index.search(args.question, k=args.k)
+    with trace_query(args.question, metadata={"entrypoint": "scripts/audit_run.py", "top_k": args.k}):
+        results = index.search(args.question, k=args.k)
     retrieved = [
         {
             "page_id": result.page_id,
@@ -71,6 +73,7 @@ def main() -> None:
     with out.open("a", encoding="utf-8") as handle:
         handle.write(json.dumps(payload, ensure_ascii=True) + "\n")
     print(json.dumps(payload, indent=2))
+    flush_traces()
 
 
 if __name__ == "__main__":

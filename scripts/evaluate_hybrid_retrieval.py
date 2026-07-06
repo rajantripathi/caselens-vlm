@@ -3,6 +3,7 @@ from __future__ import annotations
 
 import argparse
 import sys
+import time
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -10,6 +11,7 @@ sys.path.insert(0, str(ROOT / "src"))
 
 from caselens.io import read_json, read_jsonl, write_json
 from caselens.retrieval import BM25Index
+from observability import flush_traces, log_retrieval, trace_query
 
 
 def parse_args() -> argparse.Namespace:
@@ -57,17 +59,33 @@ def main() -> None:
     hits = 0
     for qa in qas:
         query = qa["question"]
-        bm25_scores = {result.page_id: result.score for result in bm25.search(query, k=len(page_ids))}
-        query_vec = model.encode([query], normalize_embeddings=True)[0]
-        dense_scores = dict(zip(page_ids, embeddings @ query_vec))
-        bm25_norm = minmax(bm25_scores)
-        dense_norm = minmax(dense_scores)
-        combined = {
-            page_id: args.alpha * bm25_norm.get(page_id, 0.0)
-            + (1 - args.alpha) * dense_norm.get(page_id, 0.0)
-            for page_id in page_ids
-        }
-        ranked = sorted(combined, key=combined.get, reverse=True)[: args.k]
+        with trace_query(
+            query,
+            metadata={
+                "entrypoint": "scripts/evaluate_hybrid_retrieval.py",
+                "top_k": args.k,
+                "alpha": args.alpha,
+                "dense_model": model_name,
+            },
+        ):
+            start = time.perf_counter()
+            bm25_scores = {result.page_id: result.score for result in bm25.search(query, k=len(page_ids))}
+            query_vec = model.encode([query], normalize_embeddings=True)[0]
+            dense_scores = dict(zip(page_ids, embeddings @ query_vec))
+            bm25_norm = minmax(bm25_scores)
+            dense_norm = minmax(dense_scores)
+            combined = {
+                page_id: args.alpha * bm25_norm.get(page_id, 0.0)
+                + (1 - args.alpha) * dense_norm.get(page_id, 0.0)
+                for page_id in page_ids
+            }
+            ranked = sorted(combined, key=combined.get, reverse=True)[: args.k]
+            log_retrieval(
+                query,
+                [{"page_id": page_id} for page_id in ranked],
+                [combined[page_id] for page_id in ranked],
+                (time.perf_counter() - start) * 1000,
+            )
         hits += int(qa["page_id"] in ranked)
 
     total = len(qas)
@@ -81,6 +99,7 @@ def main() -> None:
     print(metrics)
     if args.out:
         write_json(args.out, metrics)
+    flush_traces()
 
 
 if __name__ == "__main__":

@@ -2,9 +2,15 @@ from __future__ import annotations
 
 import math
 import re
+import time
 from collections import Counter
 from dataclasses import dataclass
 from typing import Any
+
+try:
+    from observability import log_retrieval, trace_step
+except ImportError:
+    from src.observability import log_retrieval, trace_step
 
 
 TOKEN_RE = re.compile(r"[a-z0-9]+")
@@ -88,7 +94,9 @@ class BM25Index:
         ]
         return cls(page_ids=page_ids, doc_tokens=doc_tokens)
 
+    @trace_step("retrieval.search")
     def search(self, query: str, k: int = 5) -> list[SearchResult]:
+        start = time.perf_counter()
         query_terms = tokenize(query)
         scores: list[SearchResult] = []
         for idx, tf in enumerate(self.term_freqs):
@@ -103,7 +111,10 @@ class BM25Index:
             if score > 0:
                 scores.append(SearchResult(page_id=self.page_ids[idx], score=score))
         scores.sort(key=lambda item: item.score, reverse=True)
-        return scores[:k]
+        results = scores[:k]
+        latency_ms = (time.perf_counter() - start) * 1000
+        log_retrieval(query, results, [result.score for result in results], latency_ms)
+        return results
 
     def to_dict(self) -> dict[str, Any]:
         return {
